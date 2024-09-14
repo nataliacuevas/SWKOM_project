@@ -14,16 +14,19 @@ namespace sws.Controllers
     public class UploadDocumentController : ControllerBase
     {
         private readonly UploadDocumentContext _context;
+        private readonly ILogger _logger;
 
-        public UploadDocumentController(UploadDocumentContext context)
+        public UploadDocumentController(UploadDocumentContext context, ILogger<UploadDocumentController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/UploadDocument
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UploadDocument>>> GetUploadedDocuments()
         {
+            _logger.LogInformation(200, "getting all documents");
             return await _context.UploadedDocuments.ToListAsync();
         }
 
