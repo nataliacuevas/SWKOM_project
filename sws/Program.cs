@@ -4,7 +4,7 @@ using sws.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 //register DB
-builder.Services.AddDbContext<UploadDocumentContext>(opt => opt.UseInMemoryDatabase("UploadDocumentList"));
+builder.Services.AddDbContext<UploadDocumentContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("DocumentContext")));
 
 
 // Add services to the container.

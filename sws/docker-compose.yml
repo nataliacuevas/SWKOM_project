@@ -23,6 +23,40 @@ services:
       - sws-api  # Ensure that the Nginx service starts after the API.
     networks:
       - app-network
+    
+  postgres:
+    container_name: postgres  
+    image: postgres:14-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - ~/apps/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      PGDATA: /data/postgres
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:7.2
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    volumes:
+      #  - ./docker-data/pgadmin/:/var/lib/pgadmin
+      - ./pgadmin-servers.json:/pgadmin4/servers.json
+
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - app-network
+    restart: unless-stopped
 
 networks:
   app-network:
