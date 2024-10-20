@@ -1,0 +1,1 @@
+dotnet ef database update --connection "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=changeme"
