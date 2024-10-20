@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace sws.Controllers
+namespace sws.SL.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

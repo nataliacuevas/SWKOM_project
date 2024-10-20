@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using sws.DAL.Entities;
 
-namespace sws.Models
+namespace sws.DAL
 {
     public class UploadDocumentContext : DbContext
     {

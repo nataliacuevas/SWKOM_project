@@ -5,9 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using sws.Models;
+using sws.BLL;
+using sws.DAL;
+using sws.DAL.Entities;
+using sws.DAL.Repositories;
+using sws.SL.DTOs;
 
-namespace sws.Controllers
+namespace sws.SL.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -15,11 +19,15 @@ namespace sws.Controllers
     {
         private readonly UploadDocumentContext _context;
         private readonly ILogger _logger;
+        private readonly IDocumentLogic _documentLogic;
 
-        public UploadDocumentController(UploadDocumentContext context, ILogger<UploadDocumentController> logger)
+        public UploadDocumentController(UploadDocumentContext context,
+                                        ILogger<UploadDocumentController> logger,
+                                        IDocumentLogic documentLogic)
         {
             _context = context;
             _logger = logger;
+            _documentLogic = documentLogic;
         }
 
         // GET: api/UploadDocument
@@ -78,10 +86,13 @@ namespace sws.Controllers
         // POST: api/UploadDocument
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UploadDocument>> PostUploadDocument(UploadDocument uploadDocument)
+        public async Task<ActionResult<UploadDocumentDTO>> PostUploadDocument(UploadDocumentDTO uploadDocument)
         {
-            _context.UploadedDocuments.Add(uploadDocument);
-            await _context.SaveChangesAsync();
+            // should await?
+            // Passing DTO to Business Layer
+            _documentLogic.Add(uploadDocument);
+            //_context.UploadedDocuments.Add(uploadDocument);
+            //await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetUploadDocument", new { id = uploadDocument.Id }, uploadDocument);
         }
