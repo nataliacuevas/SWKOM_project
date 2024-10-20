@@ -15,5 +15,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/out .
 
+
 # Set the entry point for the application
 ENTRYPOINT ["dotnet", "sws.dll"]
