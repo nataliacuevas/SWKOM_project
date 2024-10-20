@@ -21,5 +21,34 @@ namespace sws.BLL
             UploadDocument document = _mapper.Map<UploadDocument>(uploadDocumentDTO);
             _documentRepository.Add(document);
         }
+
+        public UploadDocumentDTO? PopById(long id)
+        {
+            var document = _documentRepository.Pop(id);
+            return _mapper.Map<UploadDocumentDTO>(document);
+        }
+
+        public UploadDocumentDTO? GetById(long id)
+        {
+            var document = _documentRepository.Get(id);
+            return _mapper.Map<UploadDocumentDTO>(document);
+        }
+
+        public List<UploadDocumentDTO> GetAll()
+        {
+            var list = _documentRepository.GetAll();
+
+            return list.Select(doc => _mapper.Map<UploadDocumentDTO>(doc)).ToList();
+
+
+        }
+
+        public UploadDocumentDTO? Put(UploadDocumentDTO uploadDocumentDTO)
+        {
+            var uploadDocument = _mapper.Map<UploadDocument>(uploadDocumentDTO);
+            var document = _documentRepository.Put(uploadDocument);
+            return _mapper.Map<UploadDocumentDTO>(document);
+
+        }
     }
 }

@@ -17,46 +17,52 @@ namespace sws.SL.Controllers
     [ApiController]
     public class UploadDocumentController : ControllerBase
     {
-        private readonly UploadDocumentContext _context;
         private readonly ILogger _logger;
         private readonly IDocumentLogic _documentLogic;
 
-        public UploadDocumentController(UploadDocumentContext context,
-                                        ILogger<UploadDocumentController> logger,
+        public UploadDocumentController(ILogger<UploadDocumentController> logger,
                                         IDocumentLogic documentLogic)
         {
-            _context = context;
             _logger = logger;
             _documentLogic = documentLogic;
         }
 
         // GET: api/UploadDocument
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UploadDocument>>> GetUploadedDocuments()
+        public async Task<ActionResult<IEnumerable<UploadDocumentDTO>>> GetUploadedDocuments()
         {
             _logger.LogInformation(200, "getting all documents");
-            return await _context.UploadedDocuments.ToListAsync();
+            return _documentLogic.GetAll();
+            // return await _context.UploadedDocuments.ToListAsync();
         }
 
         // GET: api/UploadDocument/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UploadDocument>> GetUploadDocument(long id)
+        public async Task<ActionResult<UploadDocumentDTO>> GetUploadDocument(long id)
         {
-            var uploadDocument = await _context.UploadedDocuments.FindAsync(id);
-
-            if (uploadDocument == null)
-            {
+            var document = _documentLogic.GetById(id);
+            if (document == null) {
                 return NotFound();
+            } else {
+                return document;
             }
-
-            return uploadDocument;
         }
 
         // PUT: api/UploadDocument/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUploadDocument(long id, UploadDocument uploadDocument)
+        public async Task<IActionResult> PutUploadDocument(UploadDocumentDTO uploadDocument)
         {
+            var document = _documentLogic.Put(uploadDocument);
+            if (document == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return NoContent();
+            }
+            /*
             if (id != uploadDocument.Id)
             {
                 return BadRequest();
@@ -81,10 +87,12 @@ namespace sws.SL.Controllers
             }
 
             return NoContent();
+            */
         }
 
         // POST: api/UploadDocument
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // TODO: reject if document with same ID exists.
         [HttpPost]
         public async Task<ActionResult<UploadDocumentDTO>> PostUploadDocument(UploadDocumentDTO uploadDocument)
         {
@@ -101,21 +109,10 @@ namespace sws.SL.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUploadDocument(long id)
         {
-            var uploadDocument = await _context.UploadedDocuments.FindAsync(id);
-            if (uploadDocument == null)
-            {
+            if (_documentLogic.PopById(id) == null)
                 return NotFound();
-            }
-
-            _context.UploadedDocuments.Remove(uploadDocument);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UploadDocumentExists(long id)
-        {
-            return _context.UploadedDocuments.Any(e => e.Id == id);
+            else
+                return NoContent();
         }
     }
 }
