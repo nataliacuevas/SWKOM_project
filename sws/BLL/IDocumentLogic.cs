@@ -10,6 +10,8 @@ namespace sws.BLL
 
         UploadDocumentDTO? GetById(long id);
 
+        Task<UploadDocumentDTO?> GetByIdAsync(long id);
+
         List<UploadDocumentDTO> GetAll();
 
         // If replaced, returns the older value

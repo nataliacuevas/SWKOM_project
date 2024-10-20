@@ -40,7 +40,7 @@ namespace sws.SL.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UploadDocumentDTO>> GetUploadDocument(long id)
         {
-            var document = _documentLogic.GetById(id);
+            var document = await _documentLogic.GetByIdAsync(id);
             if (document == null) {
                 return NotFound();
             } else {

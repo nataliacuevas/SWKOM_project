@@ -37,6 +37,11 @@ namespace sws.DAL.Repositories
             return _context.UploadedDocuments.FirstOrDefault(doc => doc.Id == id);
         }
 
+        public async Task<UploadDocument?> GetAsync(long id)
+        {
+            return await _context.UploadedDocuments.FirstOrDefaultAsync(doc => doc.Id == id);
+        }
+
         public List<UploadDocument> GetAll()
         {
             return _context.UploadedDocuments.ToList();

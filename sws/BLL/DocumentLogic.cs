@@ -34,13 +34,17 @@ namespace sws.BLL
             return _mapper.Map<UploadDocumentDTO>(document);
         }
 
+        public async Task<UploadDocumentDTO?> GetByIdAsync(long id)
+        {
+            var document = await _documentRepository.GetAsync(id);
+            return _mapper.Map<UploadDocumentDTO>(document);
+        }
+
+
         public List<UploadDocumentDTO> GetAll()
         {
             var list = _documentRepository.GetAll();
-
             return list.Select(doc => _mapper.Map<UploadDocumentDTO>(doc)).ToList();
-
-
         }
 
         public UploadDocumentDTO? Put(UploadDocumentDTO uploadDocumentDTO)
