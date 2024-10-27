@@ -27,7 +27,14 @@ namespace sws.SL.Controllers
             _documentLogic = documentLogic;
         }
 
-        // GET: api/UploadDocument
+
+        /// <summary>
+        /// Retrieves all uploaded documents
+        /// </summary>
+
+        /// <remarks>
+        /// Returns all uploaded documents for all the users
+        /// </remarks>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UploadDocumentDTO>>> GetUploadedDocuments()
         {
@@ -36,6 +43,13 @@ namespace sws.SL.Controllers
             // return await _context.UploadedDocuments.ToListAsync();
         }
 
+        /// <summary>
+        /// Retrieves an uploaded document
+        /// </summary>
+
+        /// <remarks>
+        /// Given a unique ID, retrieves the correspondant document if existing
+        /// </remarks>
         // GET: api/UploadDocument/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UploadDocumentDTO>> GetUploadDocument(long id)
@@ -48,6 +62,13 @@ namespace sws.SL.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates a target document
+        /// </summary>
+
+        /// <remarks>
+        /// To update a document, the provided file must have the same ID
+        /// </remarks>
         // PUT: api/UploadDocument/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -90,6 +111,13 @@ namespace sws.SL.Controllers
             */
         }
 
+        /// <summary>
+        /// Uploads new document
+        /// </summary>
+
+        /// <remarks>
+        /// Uploads new file into the DB
+        /// </remarks>
         // POST: api/UploadDocument
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         // TODO: reject if document with same ID exists.
@@ -105,6 +133,13 @@ namespace sws.SL.Controllers
             return CreatedAtAction("GetUploadDocument", new { id = uploadDocument.Id }, uploadDocument);
         }
 
+        /// <summary>
+        /// Deletes document
+        /// </summary>
+
+        /// <remarks>
+        /// Given an ID, it deletes the correspondant file
+        /// </remarks>
         // DELETE: api/UploadDocument/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUploadDocument(long id)

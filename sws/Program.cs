@@ -3,6 +3,7 @@ using sws.DAL;
 using sws.BLL;
 using sws.DAL.Repositories;
 using sws.BLL.Mappers;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,13 @@ builder.Services.AddScoped<IDocumentLogic, DocumentLogic>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    // Set the comments path for the Swagger JSON and UI.
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+});
 
 // register logging provider
 builder.Logging.ClearProviders();
