@@ -16,5 +16,10 @@ WORKDIR /app
 COPY --from=build /app/out .
 
 
+COPY log4net.config /sws/log4net.config
+# Create logs directory in the container
+RUN mkdir -p /app/logs
+
+
 # Set the entry point for the application
 ENTRYPOINT ["dotnet", "sws.dll"]
