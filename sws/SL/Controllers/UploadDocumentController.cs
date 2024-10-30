@@ -42,25 +42,6 @@ namespace sws.SL.Controllers
         public async Task<ActionResult<IEnumerable<UploadDocumentDTO>>> GetUploadedDocuments()
         {
             _logger.LogInformation(200, "getting all documents");
-            var factory = new ConnectionFactory { HostName = "rabbitmq",
-                                                  VirtualHost = "mrRabbit"};
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-
-            channel.QueueDeclare(queue: "hello",
-                     durable: false,
-                     exclusive: false,
-                     autoDelete: false,
-                     arguments: null);
-
-            const string message = "Hello World!";
-            var body = Encoding.UTF8.GetBytes(message);
-
-            channel.BasicPublish(exchange: string.Empty,
-                                 routingKey: "hello",
-                                 basicProperties: null,
-                                 body: body);
-
             return _documentLogic.GetAll();
             // return await _context.UploadedDocuments.ToListAsync();
         }
@@ -76,32 +57,8 @@ namespace sws.SL.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UploadDocumentDTO>> GetUploadDocument(long id)
         {
-            _logger.LogInformation(200, "Retrieving message from RabbitMQ");
-            var factory = new ConnectionFactory
-            {
-                HostName = "rabbitmq",
-                VirtualHost = "mrRabbit"
-            };
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-
-            channel.QueueDeclare(queue: "hello",
-                     durable: false,
-                     exclusive: false,
-                     autoDelete: false,
-                     arguments: null);
-
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += (model, ea) =>
-            {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                _logger.LogInformation(201, $" [x] Received {message}");
-            };
-            channel.BasicConsume(queue: "hello",
-                     autoAck: true,
-                     consumer: consumer);
-
+            _logger.LogInformation(200, "getting single document");
+            
 
             var document = await _documentLogic.GetByIdAsync(id);
             if (document == null) {
@@ -178,6 +135,7 @@ namespace sws.SL.Controllers
             _documentLogic.Add(uploadDocument);
             //_context.UploadedDocuments.Add(uploadDocument);
             //await _context.SaveChangesAsync();
+
 
             return CreatedAtAction("GetUploadDocument", new { id = uploadDocument.Id }, uploadDocument);
         }
