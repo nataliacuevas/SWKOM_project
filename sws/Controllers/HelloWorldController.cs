@@ -10,7 +10,7 @@ namespace sws.Controllers
         [HttpGet]
         public string Get()
         {
-            return "Hello World";
+            return "Hello This World";
         }
     }
 }
