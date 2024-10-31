@@ -3,19 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Document Management Dashboard</title>
+    <style>
+      
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #4A90E2;
+            color: #fff;
+            padding: 1.5em 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+            header h1 {
+                margin: 0;
+                font-size: 2.5em;
+            }
+
+        .subtitle {
+            font-size: 1.1em;
+            color: #d3e8ff;
+            margin-top: 0.5em;
+        }
+
+        nav {
+            background: #333;
+            padding: 1em;
+        }
+
+            nav ul {
+                display: flex;
+                justify-content: center;
+                gap: 2em;
+                list-style: none;
+            }
+
+                nav ul li a {
+                    color: #f4f4f4;
+                    text-decoration: none;
+                    font-weight: bold;
+                    transition: color 0.3s;
+                }
+
+                    nav ul li a:hover {
+                        color: #b3b3b3;
+                    }
+
+        main {
+            max-width: 1100px; 
+            margin: 2em auto;
+            padding: 0 1em;
+        }
+
+        .section {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 2em;
+            margin-bottom: 2em;
+        }
+
+        h2 {
+            color: #4A90E2;
+            margin-bottom: 1em;
+            font-size: 1.8em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5em;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+            margin-top: 1em;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, textarea {
+            padding: 0.75em;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+            input:focus, textarea:focus {
+                border-color: #4A90E2;
+            }
+
+        button {
+            padding: 0.7em 1.5em;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+            button:hover {
+                transform: translateY(-2px);
+            }
+
+        .primary-btn {
+            background-color: #4A90E2;
+            color: #fff;
+        }
+
+            .primary-btn:hover {
+                background-color: #357ABD;
+            }
+
+        .secondary-btn {
+            background-color: #6c757d;
+            color: #fff;
+            margin-right: 0.5em;
+        }
+
+            .secondary-btn:hover {
+                background-color: #5a6268;
+            }
+
+        .danger-btn {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+            .danger-btn:hover {
+                background-color: #c82333;
+            }
+
+        /* Document styling */
+        .document-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1em;
+            margin-top: 1em;
+            padding: 1em;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .document {
+            background: #fff;
+            padding: 1em;
+            width: calc(33% - 1em); /* Three items per row */
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5em;
+        }
+
+        .document-buttons {
+            margin-top: auto;
+        }
+
+        .document:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+      
+    </style>
 </head>
 <body>
     <header>
-        <h1>Simple Dashboard</h1>
+        <h1>Document Management Dashboard</h1>
     </header>
 
     <main>
-        <section>
-            <h2>API Communication</h2>
-            <button id="fetch-message">Fetch "Hello World" from API</button>
-            <p id="api-message">Click the button to fetch a message from the API.</p>
+        <!-- Communication Test Section -->
+        <section id="test-communication" class="section">
+            <h3>Test Server Communication</h3>
+            <form action="/api/helloworld" method="get" target="server-response">
+                <button type="submit" class="primary-btn">Check Server Connection</button>
+            </form>
+            <iframe name="server-response" style="width:100%; height:50px; border:1px solid #ddd; margin-top:1em;"></iframe>
+        </section>
+
+        <!-- Document Management Section -->
+        <section id="document-section" class="section">
+
+            <div class="document-list" id="document-list">
+                <!-- Hardcoded data for example -->
+                <div class="document">
+
+                    <strong>Name:</strong> Sample Document 1 <br>
+
+                    <div class="document-buttons">
+                        <button onclick="deleteDocument(1)" class="danger-btn">Delete</button>
+                        <button onclick="updateDocument(1)" class="secondary-btn">Update</button>
+                    </div>
+                </div>
+                <div class="document">
+
+                    <strong>Name:</strong> Sample Document 2 <br>
+
+                    <div class="document-buttons">
+                        <button onclick="deleteDocument(2)" class="danger-btn">Delete</button>
+                        <button onclick="updateDocument(2)" class="secondary-btn">Update</button>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Add New Document</h3>
+            <form id="add-document-form" class="form">
+                <label for="document-name">Document Name:</label>
+                <input type="text" id="document-name" name="name" required>
+                <label for="document-file">Upload Document File:</label>
+                <input type="file" id="document-file" name="file" required>
+                <button type="submit" class="primary-btn">Add Document</button>
+            </form>
         </section>
     </main>
 
