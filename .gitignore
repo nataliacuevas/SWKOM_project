@@ -8,3 +8,5 @@
 /sws/obj
 /sws/.vs/ProjectEvaluation
 /sws/databaseUpdate.PS1
+/SWKOM.test/bin/Debug/net8.0
+/SWKOM.test/obj
