@@ -14,7 +14,8 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/out .
-
+# Install curl for network diagnostics
+RUN apt-get update && apt-get install -y curl iputils-ping
 
 # Set the entry point for the application
 ENTRYPOINT ["dotnet", "sws.dll"]

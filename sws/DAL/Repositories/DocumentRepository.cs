@@ -7,9 +7,9 @@ namespace sws.DAL.Repositories
 {
     public class DocumentRepository : IDocumentRepository
     {
-        private readonly UploadDocumentContext _context;
+        private readonly IUploadDocumentContext _context;
 
-        public DocumentRepository(UploadDocumentContext context)
+        public DocumentRepository(IUploadDocumentContext context)
         {
             _context = context;
         }

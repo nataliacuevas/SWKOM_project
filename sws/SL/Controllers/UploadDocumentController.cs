@@ -10,6 +10,9 @@ using sws.DAL;
 using sws.DAL.Entities;
 using sws.DAL.Repositories;
 using sws.SL.DTOs;
+using RabbitMQ.Client;
+using System.Text;
+using RabbitMQ.Client.Events;
 
 namespace sws.SL.Controllers
 {
@@ -54,6 +57,9 @@ namespace sws.SL.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UploadDocumentDTO>> GetUploadDocument(long id)
         {
+            _logger.LogInformation(200, "getting single document");
+            
+
             var document = await _documentLogic.GetByIdAsync(id);
             if (document == null) {
                 return NotFound();
@@ -129,6 +135,7 @@ namespace sws.SL.Controllers
             _documentLogic.Add(uploadDocument);
             //_context.UploadedDocuments.Add(uploadDocument);
             //await _context.SaveChangesAsync();
+
 
             return CreatedAtAction("GetUploadDocument", new { id = uploadDocument.Id }, uploadDocument);
         }
