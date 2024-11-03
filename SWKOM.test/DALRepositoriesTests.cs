@@ -31,9 +31,8 @@ namespace SWKOM.test
         {
             // Arrange
             var context = CreateInMemoryContext("Add_ShouldAddDocumentAndSaveChanges_Once");
-            var loggerMock = new Mock<ILogger<DocumentRepository>>();
 
-            var repository = new DocumentRepository(context, loggerMock.Object);
+            var repository = new DocumentRepository(context);
 
             var document = new UploadDocument { File = [] };
 
@@ -50,14 +49,13 @@ namespace SWKOM.test
             // Arrange
 
             var context = CreateInMemoryContext("Pop_WhenDocumentExists_RemovesDocumentAndSavesChanges");
-            var loggerMock = new Mock<ILogger<DocumentRepository>>();
 
             // Seed the in-memory database with a document
             var document = new UploadDocument { Id = 1, File = [] };
             context.UploadedDocuments.Add(document);
             context.SaveChanges();
 
-            var repository = new DocumentRepository(context, loggerMock.Object);
+            var repository = new DocumentRepository(context);
 
             // Act
             var result = repository.Pop(1);
@@ -73,14 +71,13 @@ namespace SWKOM.test
             // Arrange
 
             var context = CreateInMemoryContext("Pop_WhenNoDocumentExists_DoesNothing");
-            var loggerMock = new Mock<ILogger<DocumentRepository>>();
 
             // Seed the in-memory database with a document
             var document = new UploadDocument { Id = 1, File = [] };
             context.UploadedDocuments.Add(document);
             context.SaveChanges();
 
-            var repository = new DocumentRepository(context, loggerMock.Object);
+            var repository = new DocumentRepository(context);
 
             // Act
             var result = repository.Pop(2);

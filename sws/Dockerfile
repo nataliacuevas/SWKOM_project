@@ -6,9 +6,13 @@ WORKDIR /app
 COPY *.csproj ./
 RUN dotnet restore
 
+
 # Copy the rest of the application code
 COPY . ./
 RUN dotnet publish "sws.csproj" -c Release -o out
+
+# Ensure log4net.config is copied over 
+COPY log4net.config /app
 
 # Use the official ASP.NET runtime image for the runtime environment
 FROM mcr.microsoft.com/dotnet/aspnet:8.0

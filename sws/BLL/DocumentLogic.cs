@@ -5,6 +5,7 @@ using sws.DAL.Entities;
 using sws.DAL.Repositories;
 using sws.SL.DTOs;
 using System.Text;
+using log4net;
 
 
 namespace sws.BLL
@@ -13,28 +14,48 @@ namespace sws.BLL
     {
         private readonly IDocumentRepository _documentRepository;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+        
+        private static readonly ILog log = LogManager.GetLogger(typeof(DocumentLogic));
 
-        public DocumentLogic(IDocumentRepository documentRepository, IMapper mapper, ILogger<DocumentLogic> logger) 
+        public DocumentLogic(IDocumentRepository documentRepository, IMapper mapper) 
         {
             _documentRepository = documentRepository;
             _mapper = mapper;
-            _logger = logger;
+            
         }
 
         public void Add(UploadDocumentDTO uploadDocumentDTO)
         {
+            log.Info("Adding a new document.");
+            try
+            {
+                UploadDocument document = _mapper.Map<UploadDocument>(uploadDocumentDTO);
+                send2RabbitMQ(document);
+                _documentRepository.Add(document);
+                log.Info($"Document '{document.Name}' added successfully.");
+            }
+            catch(Exception ex)
+            {
+                log.Error("Error adding document.", ex);
+            }
            
-            UploadDocument document = _mapper.Map<UploadDocument>(uploadDocumentDTO);
-            send2RabbitMQ(document);
-            _documentRepository.Add(document);
         }
 
         public DownloadDocumentDTO? PopById(long id)
         {
+            log.Info($"Attempting to pop document with ID: {id}");
             var document = _documentRepository.Pop(id);
+            if (document == null)
+            {
+                log.Warn($"Document with ID {id} not found.");
+            }
+            else
+            {
+                log.Info($"Document with ID {id} popped successfully.");
+            }
             return _mapper.Map<DownloadDocumentDTO>(document);
         }
+
 
         public DownloadDocumentDTO? GetById(long id)
         {
@@ -51,6 +72,7 @@ namespace sws.BLL
 
         public List<DownloadDocumentDTO> GetAll()
         {
+            log.Info("Fetching all documents.");
             var list = _documentRepository.GetAll();
             return list.Select(doc => _mapper.Map<DownloadDocumentDTO>(doc)).ToList();
         }
@@ -59,9 +81,11 @@ namespace sws.BLL
         {
             var uploadDocument = _mapper.Map<UploadDocument>(uploadDocumentDTO);
             var document = _documentRepository.Put(uploadDocument);
+
             return _mapper.Map<DownloadDocumentDTO>(document);
 
         }
+
 
         public void send2RabbitMQ(UploadDocument docu) 
         {
