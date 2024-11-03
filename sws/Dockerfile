@@ -8,7 +8,7 @@ RUN dotnet restore
 
 # Copy the rest of the application code
 COPY . ./
-RUN dotnet publish -c Release -o out
+RUN dotnet publish "sws.csproj" -c Release -o out
 
 # Use the official ASP.NET runtime image for the runtime environment
 FROM mcr.microsoft.com/dotnet/aspnet:8.0

@@ -10,3 +10,6 @@
 /sws/databaseUpdate.PS1
 /SWKOM.test/bin/Debug/net8.0
 /SWKOM.test/obj
+/SWKOM.test/bin/Release/net8.0
+/sws/bin/Release/net8.0
+/sws/out
