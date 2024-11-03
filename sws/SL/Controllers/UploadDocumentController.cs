@@ -118,7 +118,6 @@ namespace sws.SL.Controllers
         [HttpPost]
         public async Task<IActionResult> PostUploadDocument([FromForm] UploadDocumentDTO uploadDocument)
         {
-            // should await?
             // Passing DTO to Business Layer
             log.Info("Request to upload a new document.");
             try
@@ -135,10 +134,12 @@ namespace sws.SL.Controllers
 
            
 
+
             //_context.UploadedDocuments.Add(uploadDocument);
             //await _context.SaveChangesAsync();
 
            
+
         }
 
         /// <summary>
