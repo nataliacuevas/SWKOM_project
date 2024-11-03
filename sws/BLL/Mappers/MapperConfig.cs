@@ -12,7 +12,7 @@ namespace sws.BLL.Mappers
         {
             CreateMap<UploadDocumentDTO, UploadDocument>()
               .ForMember(dest => dest.File, opt => opt.MapFrom(src => ConvertIFormFileToByteArray(src.File)));
-
+            //we are mapping as uploadDocumentDTO -> UploadDocument -> DownloadDocumentDTO because the upload and download fields do not match 
             CreateMap<UploadDocument, DownloadDocumentDTO>();
             
         }

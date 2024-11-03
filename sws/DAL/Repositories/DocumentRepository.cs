@@ -1,17 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Core.Types;
+using sws.BLL;
 using sws.DAL;
 using sws.DAL.Entities;
+using sws.SL.Controllers;
 
 namespace sws.DAL.Repositories
 {
     public class DocumentRepository : IDocumentRepository
     {
         private readonly IUploadDocumentContext _context;
+        private readonly ILogger _logger;
 
-        public DocumentRepository(IUploadDocumentContext context)
+        public DocumentRepository(IUploadDocumentContext context, ILogger<DocumentRepository> logger)
         {
             _context = context;
+            _logger = logger;
+
         }
 
         public UploadDocument Add(UploadDocument document)

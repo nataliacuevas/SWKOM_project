@@ -107,15 +107,11 @@ namespace sws.SL.Controllers
         [HttpPost]
         public async Task<IActionResult> PostUploadDocument([FromForm] UploadDocumentDTO uploadDocument)
         {
-            // should await?
             // Passing DTO to Business Layer
 
             _documentLogic.Add(uploadDocument);
 
-            //_context.UploadedDocuments.Add(uploadDocument);
-            //await _context.SaveChangesAsync();
-
-            _logger.LogInformation(200, "we got inside of the controller. Name: " + uploadDocument.Name);
+            _logger.LogInformation(150, "File with name: " + uploadDocument.Name + "uploaded!");
 
             return Ok("File uploaded successfullly.");
         }
