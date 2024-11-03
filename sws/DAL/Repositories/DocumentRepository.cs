@@ -2,12 +2,15 @@
 using NuGet.Protocol.Core.Types;
 using sws.DAL;
 using sws.DAL.Entities;
+using log4net;
 
 namespace sws.DAL.Repositories
 {
     public class DocumentRepository : IDocumentRepository
     {
         private readonly IUploadDocumentContext _context;
+        private static readonly ILog log = LogManager.GetLogger(typeof(DocumentRepository));
+
 
         public DocumentRepository(IUploadDocumentContext context)
         {
@@ -16,18 +19,26 @@ namespace sws.DAL.Repositories
 
         public UploadDocument Add(UploadDocument document)
         {
+            log.Info("Adding document to the database");
             _context.UploadedDocuments.Add(document);
             _context.SaveChanges();
+            log.Info($"Document '{document.Name}' added to the database.");
             return document;
         }
 
         public UploadDocument? Pop(long id)
         {
+            log.Info($"Popping document with ID {id}.");
             var document = Get(id);
             if (document != null) 
             {
                 _context.UploadedDocuments.Remove(document);
                 _context.SaveChanges();
+                log.Info($"Document with ID {id} removed from the database.");
+            }
+            else
+            {
+                log.Warn($"Document with ID {id} not found.");
             }
             return document;
         }

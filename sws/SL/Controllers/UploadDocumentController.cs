@@ -13,6 +13,7 @@ using sws.SL.DTOs;
 using RabbitMQ.Client;
 using System.Text;
 using RabbitMQ.Client.Events;
+using log4net;
 
 namespace sws.SL.Controllers
 {
@@ -20,13 +21,12 @@ namespace sws.SL.Controllers
     [ApiController]
     public class UploadDocumentController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private static readonly ILog log = LogManager.GetLogger(typeof(UploadDocumentController));
         private readonly IDocumentLogic _documentLogic;
 
-        public UploadDocumentController(ILogger<UploadDocumentController> logger,
-                                        IDocumentLogic documentLogic)
+        public UploadDocumentController(IDocumentLogic documentLogic)
         {
-            _logger = logger;
+           
             _documentLogic = documentLogic;
         }
 
@@ -42,9 +42,19 @@ namespace sws.SL.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DownloadDocumentDTO>>> GetUploadedDocuments()
         {
-            _logger.LogInformation(200, "getting all documents");
-            return _documentLogic.GetAll();
-            // return await _context.UploadedDocuments.ToListAsync();
+            log.Info("Request to retrieve all documents received.");
+            try
+            {
+                var documents = _documentLogic.GetAll();
+                log.Info($"Successfully retrieved {documents.Count} documents.");
+                return documents;
+            }
+             catch (Exception ex)
+            {
+                log.Error("Error retrieving all documents.", ex);
+                return StatusCode(500, "Internal server error while fetching documents.");
+            }
+            
         }
 
         /// <summary>
@@ -59,15 +69,16 @@ namespace sws.SL.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<DownloadDocumentDTO>> GetUploadDocument(long id)
         {
-            _logger.LogInformation(200, "getting single document");
-            
+           log.Info($"Request to retrieve document with ID {id}.");
+
 
             var document = await _documentLogic.GetByIdAsync(id);
             if (document == null) {
+                log.Warn($"Document with ID {id} not found.");
                 return NotFound();
-            } else {
-                return document;
             }
+            log.Info($"Successfully retrieved document with ID {id}.");
+            return document;
         }
 
         /// <summary>
@@ -109,15 +120,25 @@ namespace sws.SL.Controllers
         {
             // should await?
             // Passing DTO to Business Layer
+            log.Info("Request to upload a new document.");
+            try
+            {
+                _documentLogic.Add(uploadDocument);
+                log.Info($"Document '{uploadDocument.Name}' uploaded successfully.");
+                return Ok("File uploaded successfully");
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error uploading document.", ex);
+                return StatusCode(500, "Internal server error while uploading document.");
+            }
 
-            _documentLogic.Add(uploadDocument);
+           
 
             //_context.UploadedDocuments.Add(uploadDocument);
             //await _context.SaveChangesAsync();
 
-            _logger.LogInformation(200, "we got inside of the controller. Name: " + uploadDocument.Name);
-
-            return Ok("File uploaded successfullly.");
+           
         }
 
         /// <summary>
@@ -131,10 +152,24 @@ namespace sws.SL.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUploadDocument(long id)
         {
-            if (_documentLogic.PopById(id) == null)
-                return NotFound();
-            else
+            log.Info($"Request to delete document with ID {id}.");
+            try
+            {
+                if (_documentLogic.PopById(id) == null)
+                {
+                    log.Warn($"Document with ID {id} not found for deletion.");
+                    return NotFound();
+                }
+                log.Info($"Document with ID {id} deleted successfully.");
                 return NoContent();
+
+            }
+            catch(Exception ex)
+            {
+                log.Error($"Error deleting document with ID {id}.", ex);
+                return StatusCode(500, "Internal server error while deleting document.");
+            }
+       
         }
     }
 }

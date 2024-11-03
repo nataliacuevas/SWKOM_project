@@ -4,8 +4,19 @@ using sws.BLL;
 using sws.DAL.Repositories;
 using sws.BLL.Mappers;
 using System.Reflection;
+using log4net;
+using log4net.Config;
+using System.IO;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var logRepository = LogManager.GetRepository(System.Reflection.Assembly.GetEntryAssembly());
+XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+
+// Create a test log entry to verify logging configuration
+ILog log = LogManager.GetLogger(typeof(Program));
+log.Info("Application has started, and logging is configured correctly.");
 
 //register DB
 builder.Services.AddDbContext<UploadDocumentContext>(opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("DocumentContext")));
