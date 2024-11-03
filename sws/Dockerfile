@@ -11,7 +11,7 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet publish "sws.csproj" -c Release -o out
 
-# Ensure log4net.config is copied over if it's not included in your build output
+# Ensure log4net.config is copied over 
 COPY log4net.config /app
 
 # Use the official ASP.NET runtime image for the runtime environment
