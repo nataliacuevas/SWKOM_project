@@ -1,10 +1,11 @@
-﻿namespace sws.DAL.Entities
+﻿namespace sws.SL.DTOs
 {
-    public class UploadDocument
+    public class DownloadDocumentDTO
     {
         public long Id { get; set; }
         public string? Name { get; set; }
-       // public string? Content { get; set; }
         public byte[] File { get; set; }
+
+
     }
 }

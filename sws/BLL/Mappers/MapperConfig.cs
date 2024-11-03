@@ -10,8 +10,21 @@ namespace sws.BLL.Mappers
     {
         public MapperConfig()
         {
-            CreateMap<UploadDocumentDTO, UploadDocument>();
-            CreateMap<UploadDocument, UploadDocumentDTO>();
+            CreateMap<UploadDocumentDTO, UploadDocument>()
+              .ForMember(dest => dest.File, opt => opt.MapFrom(src => ConvertIFormFileToByteArray(src.File)));
+
+            CreateMap<UploadDocument, DownloadDocumentDTO>();
+            
+        }
+
+        // Helper method to convert IFormFile to byte[]
+        private static byte[] ConvertIFormFileToByteArray(IFormFile file)
+        {
+            if (file == null) return null;
+
+            using var memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            return memoryStream.ToArray();
         }
         /*  From the demo repository.
         public class MapperConfig

@@ -15,6 +15,8 @@ builder.Services.AddAutoMapper(typeof(MapperConfig));
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 // Register Businesslayer 
 builder.Services.AddScoped<IDocumentLogic, DocumentLogic>();
+// Register Businesslayer 
+builder.Services.AddScoped<IUploadDocumentContext, UploadDocumentContext>();
 
 // Add services to the containers
 builder.Services.AddControllers();

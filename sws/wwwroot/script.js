@@ -1,4 +1,6 @@
 ﻿// Fetch and display documents
+
+/* TODO, uncomment when fetch-documents object is available 
 document.getElementById('fetch-documents').addEventListener('click', function () {
     fetch('/api/UploadDocument')
         .then(response => response.json())
@@ -22,17 +24,21 @@ document.getElementById('fetch-documents').addEventListener('click', function ()
             document.getElementById('document-list').textContent = 'Error: Unable to fetch documents';
         });
 });
+*/
 
 // Handle file upload
 document.getElementById('add-document-form').addEventListener('submit', function (e) {
     e.preventDefault();
 
+
     const formData = new FormData();
     const name = document.getElementById('document-name').value;
     const file = document.getElementById('document-file').files[0];
 
-    formData.append('name', name);
-    formData.append('file', file);
+    console.log("Uploading document " + name);
+
+    formData.append('Name', name);
+    formData.append('File', file);
 
     fetch('/api/UploadDocument', {
         method: 'POST',
@@ -42,7 +48,8 @@ document.getElementById('add-document-form').addEventListener('submit', function
             if (response.ok) {
                 alert('Document added successfully!');
                 document.getElementById('add-document-form').reset();
-                document.getElementById('fetch-documents').click();  // Refresh document list
+                //TODO: uncomment
+                //document.getElementById('fetch-documents').click();  // Refresh document list
             } else {
                 alert('Error adding document.');
             }
@@ -51,6 +58,8 @@ document.getElementById('add-document-form').addEventListener('submit', function
             alert('Error: Unable to add document.');
         });
 });
+
+/* TODO Uncomment, when uncommenting the top comment
 
 // Delete a document
 function deleteDocument(id) {
@@ -94,3 +103,4 @@ function updateDocument(id) {
             });
     }
 }
+*/

@@ -15,9 +15,9 @@ namespace sws.Validators
                 .MaximumLength(100).WithMessage("Document name cannot exceed 100 characters.")
                 .MinimumLength(3).WithMessage("Name must be at least 3 characters long.");
 
-         RuleFor(doc => doc.Content)
-                .NotEmpty().WithMessage("Document content is required.")
-                .MaximumLength(5000).WithMessage("Document content cannot exceed 5000 characters.");
+        RuleFor(doc => doc.File)
+                .NotEmpty().WithMessage("Document content is required.");
+          //    .MaximumLength(5000).WithMessage("Document content cannot exceed 5000 characters.");
         }
     }
 }
