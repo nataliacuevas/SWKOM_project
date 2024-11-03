@@ -20,7 +20,7 @@ namespace sws.SL.Controllers
         [HttpGet]
         public string Get()
         {
-            return "Hello This World";
+            return "Hello dear visitor ( ͡° ͜ʖ ͡°)";
         }
     }
 }

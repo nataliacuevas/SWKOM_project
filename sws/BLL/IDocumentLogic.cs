@@ -6,15 +6,15 @@ namespace sws.BLL
     {
         void Add(UploadDocumentDTO document);
         // Returns the deleted document, null if not found
-        UploadDocumentDTO? PopById(long id);
+        DownloadDocumentDTO? PopById(long id);
 
-        UploadDocumentDTO? GetById(long id);
+        DownloadDocumentDTO? GetById(long id);
 
-        Task<UploadDocumentDTO?> GetByIdAsync(long id);
+        Task<DownloadDocumentDTO?> GetByIdAsync(long id);
 
-        List<UploadDocumentDTO> GetAll();
+        List<DownloadDocumentDTO> GetAll();
 
         // If replaced, returns the older value
-        UploadDocumentDTO? Put(UploadDocumentDTO document);
+        DownloadDocumentDTO? Put(UploadDocumentDTO document);
     }
 }

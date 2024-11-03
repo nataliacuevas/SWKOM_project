@@ -13,10 +13,13 @@ namespace sws.BLL
     {
         private readonly IDocumentRepository _documentRepository;
         private readonly IMapper _mapper;
-        public DocumentLogic(IDocumentRepository documentRepository, IMapper mapper) 
+        private readonly ILogger _logger;
+
+        public DocumentLogic(IDocumentRepository documentRepository, IMapper mapper, ILogger<DocumentLogic> logger) 
         {
             _documentRepository = documentRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public void Add(UploadDocumentDTO uploadDocumentDTO)
@@ -27,36 +30,36 @@ namespace sws.BLL
             _documentRepository.Add(document);
         }
 
-        public UploadDocumentDTO? PopById(long id)
+        public DownloadDocumentDTO? PopById(long id)
         {
             var document = _documentRepository.Pop(id);
-            return _mapper.Map<UploadDocumentDTO>(document);
+            return _mapper.Map<DownloadDocumentDTO>(document);
         }
 
-        public UploadDocumentDTO? GetById(long id)
+        public DownloadDocumentDTO? GetById(long id)
         {
             var document = _documentRepository.Get(id);
-            return _mapper.Map<UploadDocumentDTO>(document);
+            return _mapper.Map<DownloadDocumentDTO>(document);
         }
 
-        public async Task<UploadDocumentDTO?> GetByIdAsync(long id)
+        public async Task<DownloadDocumentDTO?> GetByIdAsync(long id)
         {
             var document = await _documentRepository.GetAsync(id);
-            return _mapper.Map<UploadDocumentDTO>(document);
+            return _mapper.Map<DownloadDocumentDTO>(document);
         }
 
 
-        public List<UploadDocumentDTO> GetAll()
+        public List<DownloadDocumentDTO> GetAll()
         {
             var list = _documentRepository.GetAll();
-            return list.Select(doc => _mapper.Map<UploadDocumentDTO>(doc)).ToList();
+            return list.Select(doc => _mapper.Map<DownloadDocumentDTO>(doc)).ToList();
         }
 
-        public UploadDocumentDTO? Put(UploadDocumentDTO uploadDocumentDTO)
+        public DownloadDocumentDTO? Put(UploadDocumentDTO uploadDocumentDTO)
         {
             var uploadDocument = _mapper.Map<UploadDocument>(uploadDocumentDTO);
             var document = _documentRepository.Put(uploadDocument);
-            return _mapper.Map<UploadDocumentDTO>(document);
+            return _mapper.Map<DownloadDocumentDTO>(document);
 
         }
 
@@ -76,7 +79,7 @@ namespace sws.BLL
                      autoDelete: false,
                      arguments: null);
 
-            string message = "Uploading document with id: " + docu.Id.ToString();
+            string message = "Uploading document with name: " + docu.Name;
             var body = Encoding.UTF8.GetBytes(message);
 
             channel.BasicPublish(exchange: string.Empty,
