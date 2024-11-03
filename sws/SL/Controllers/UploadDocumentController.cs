@@ -80,7 +80,8 @@ namespace sws.SL.Controllers
         /// </remarks>
         // PUT: api/UploadDocument/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        /* To be adapted for new DTO
+         [HttpPut("{id}")]
         public async Task<IActionResult> PutUploadDocument(UploadDocumentDTO uploadDocument)
         {
             var document = _documentLogic.Put(uploadDocument);
@@ -93,7 +94,7 @@ namespace sws.SL.Controllers
                 return NoContent();
             }
         }
-
+        */
         /// <summary>
         /// Uploads new document
         /// </summary>
@@ -111,7 +112,7 @@ namespace sws.SL.Controllers
 
             _documentLogic.Add(uploadDocument);
 
-            _logger.LogInformation(150, "File with name: " + uploadDocument.Name + "uploaded!");
+            _logger.LogInformation(150, "File with name: " + uploadDocument.Name + " uploaded!");
 
             return Ok("File uploaded successfullly.");
         }

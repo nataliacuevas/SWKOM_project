@@ -2,6 +2,11 @@
 using sws.Validators;
 using sws.SL.DTOs;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Logging;
+using Moq;
+using sws.DAL.Repositories;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Http;
 
 namespace SWKOM.test
 {
@@ -19,7 +24,8 @@ namespace SWKOM.test
         [Test]
         public void Should_HaveError_When_NameIsEmpty()
         {
-            var dto = new UploadDocumentDTO { Name = "", Content = "Some content" };
+            var fileMock = new Mock<IFormFile>();
+            var dto = new UploadDocumentDTO { Name = "", File = fileMock.Object };
             var result = _validator.TestValidate(dto);
             result.ShouldHaveValidationErrorFor(doc => doc.Name)
                   .WithErrorMessage("Document name is required.");
@@ -28,7 +34,8 @@ namespace SWKOM.test
         [Test]
         public void Should_HaveError_When_NameIsTooShort()
         {
-            var dto = new UploadDocumentDTO { Name = "AB", Content = "Some content" };
+            var fileMock = new Mock<IFormFile>();
+            var dto = new UploadDocumentDTO { Name = "AB", File = fileMock.Object };
             var result = _validator.TestValidate(dto);
             result.ShouldHaveValidationErrorFor(doc => doc.Name)
                   .WithErrorMessage("Name must be at least 3 characters long.");
@@ -37,40 +44,39 @@ namespace SWKOM.test
         [Test]
         public void Should_HaveError_When_NameIsTooLong()
         {
+            var fileMock = new Mock<IFormFile>();
+
             var longName = new string('A', 101);
-            var dto = new UploadDocumentDTO { Name = longName, Content = "Some content" };
+            var dto = new UploadDocumentDTO { Name = longName, File = fileMock.Object };
             var result = _validator.TestValidate(dto);
             result.ShouldHaveValidationErrorFor(doc => doc.Name)
                   .WithErrorMessage("Document name cannot exceed 100 characters.");
         }
 
         [Test]
-        public void Should_HaveError_When_ContentIsEmpty()
+        public void Should_HaveError_When_NoUploadedFile()
         {
-            var dto = new UploadDocumentDTO { Name = "Valid Name", Content = "" };
+            var dto = new UploadDocumentDTO { Name = "Valid Name", File = null };
             var result = _validator.TestValidate(dto);
-            result.ShouldHaveValidationErrorFor(doc => doc.Content)
+            result.ShouldHaveValidationErrorFor(doc => doc.File)
                   .WithErrorMessage("Document content is required.");
         }
-
+        /*  to be evaluated after IFormFile change
         [Test]
         public void Should_HaveError_When_ContentExceedsMaxLength()
         {
             var longContent = new string('A', 5001);
-            var dto = new UploadDocumentDTO { Name = "Valid Name", Content = longContent };
+            var dto = new UploadDocumentDTO { Name = "Valid Name", File = longContent };
             var result = _validator.TestValidate(dto);
             result.ShouldHaveValidationErrorFor(doc => doc.Content)
                   .WithErrorMessage("Document content cannot exceed 5000 characters.");
         }
-
+        */
         [Test]
         public void Should_NotHaveError_When_DocumentIsValid()
         {
-            var dto = new UploadDocumentDTO
-            {
-                Name = "Valid Name",
-                Content = "This is valid content."
-            };
+            var fileMock = new Mock<IFormFile>();
+            var dto = new UploadDocumentDTO { Name = "Valid Name", File = fileMock.Object };
 
             var result = _validator.TestValidate(dto);
             result.ShouldNotHaveAnyValidationErrors();
