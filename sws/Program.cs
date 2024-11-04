@@ -8,6 +8,8 @@ using log4net;
 using log4net.Config;
 using System.IO;
 using Microsoft.CodeAnalysis.Elfie.Serialization;
+using FluentValidation.AspNetCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,9 @@ builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IDocumentLogic, DocumentLogic>();
 // Register Businesslayer 
 builder.Services.AddScoped<IUploadDocumentContext, UploadDocumentContext>();
+//automatic validation 
+builder.Services.AddControllers().AddFluentValidation();
+
 
 // Add services to the containers
 builder.Services.AddControllers();
