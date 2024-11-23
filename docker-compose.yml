@@ -28,8 +28,8 @@ services:
       - app-network
 
 
-  OCRworker:
-    container_name: ocr-worker
+  ocrworker:
+    container_name: ocrworker
     build:
       context: ./OCRworker 
       dockerfile: ./Dockerfile

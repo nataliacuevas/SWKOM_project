@@ -30,8 +30,9 @@ namespace sws.BLL
             try
             {
                 UploadDocument document = _mapper.Map<UploadDocument>(uploadDocumentDTO);
-                send2RabbitMQ(document);
                 _documentRepository.Add(document);
+                send2RabbitMQ(document);
+
                 log.Info($"Document '{document.Name}' added successfully.");
             }
             catch(Exception ex)
@@ -98,12 +99,12 @@ namespace sws.BLL
             using var channel = connection.CreateModel();
 
             channel.QueueDeclare(queue: "post",
-                     durable: false,
-                     exclusive: false, //remove this 101-102-103 
-                     autoDelete: false,
-                     arguments: null);
+                    durable: false,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null);
 
-            string message = "Uploading document with name: " + docu.Name;
+            string message = $"Uploading document with name: {docu.Name} and id. {docu.Id}";
             var body = Encoding.UTF8.GetBytes(message);
 
             channel.BasicPublish(exchange: string.Empty,
