@@ -99,7 +99,7 @@ namespace sws.BLL
 
             channel.QueueDeclare(queue: "post",
                      durable: false,
-                     exclusive: false,
+                     exclusive: false, //remove this 101-102-103 
                      autoDelete: false,
                      arguments: null);
 

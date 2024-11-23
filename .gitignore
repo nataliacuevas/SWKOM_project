@@ -13,3 +13,6 @@
 /SWKOM.test/bin/Release/net8.0
 /sws/bin/Release/net8.0
 /sws/out
+/OCRworker/bin/Debug/net7.0
+/OCRworker/docs
+/OCRworker/obj

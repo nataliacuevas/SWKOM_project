@@ -9,9 +9,10 @@ namespace sws.DAL
         public UploadDocumentContext(DbContextOptions<UploadDocumentContext> options) : base(options)
         {
         }
+        // either rm virtual 
         public virtual DbSet<UploadDocument> UploadedDocuments { get; set; } = null;
         // Required for the IUploadDocument interface
-        public override int SaveChanges()
+        public override int SaveChanges() //rm 15 - 23
         {
             return base.SaveChanges();
         }
