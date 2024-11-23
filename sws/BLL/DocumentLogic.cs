@@ -6,6 +6,7 @@ using sws.DAL.Repositories;
 using sws.SL.DTOs;
 using System.Text;
 using log4net;
+using System.Collections.Generic;
 
 
 namespace sws.BLL
@@ -14,14 +15,14 @@ namespace sws.BLL
     {
         private readonly IDocumentRepository _documentRepository;
         private readonly IMapper _mapper;
-        
+
         private static readonly ILog log = LogManager.GetLogger(typeof(DocumentLogic));
 
-        public DocumentLogic(IDocumentRepository documentRepository, IMapper mapper) 
+        public DocumentLogic(IDocumentRepository documentRepository, IMapper mapper)
         {
             _documentRepository = documentRepository;
             _mapper = mapper;
-            
+
         }
 
         public void Add(UploadDocumentDTO uploadDocumentDTO)
@@ -34,11 +35,11 @@ namespace sws.BLL
                 _documentRepository.Add(document);
                 log.Info($"Document '{document.Name}' added successfully.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error("Error adding document.", ex);
             }
-           
+
         }
 
         public DownloadDocumentDTO? PopById(long id)
@@ -87,7 +88,7 @@ namespace sws.BLL
         }
 
 
-        public void send2RabbitMQ(UploadDocument docu) 
+        public void send2RabbitMQ(UploadDocument docu)
         {
             var factory = new ConnectionFactory
             {
@@ -110,32 +111,32 @@ namespace sws.BLL
                                  routingKey: "post",
                                  basicProperties: null,
                                  body: body);
-/*  To retrieve message from RabbitMQ
-            var factory = new ConnectionFactory
-            {
-                HostName = "rabbitmq",
-                VirtualHost = "mrRabbit"
-            };
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
+            /*  To retrieve message from RabbitMQ
+                        var factory = new ConnectionFactory
+                        {
+                            HostName = "rabbitmq",
+                            VirtualHost = "mrRabbit"
+                        };
+                        using var connection = factory.CreateConnection();
+                        using var channel = connection.CreateModel();
 
-            channel.QueueDeclare(queue: "post",
-                     durable: false,
-                     exclusive: false,
-                     autoDelete: false,
-                     arguments: null);
+                        channel.QueueDeclare(queue: "post",
+                                 durable: false,
+                                 exclusive: false,
+                                 autoDelete: false,
+                                 arguments: null);
 
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += (model, ea) =>
-            {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                _logger.LogInformation(201, $" [x] Received {message}");
-            };
-            channel.BasicConsume(queue: "post",
-                     autoAck: true,
-                     consumer: consumer);
-*/
+                        var consumer = new EventingBasicConsumer(channel);
+                        consumer.Received += (model, ea) =>
+                        {
+                            var body = ea.Body.ToArray();
+                            var message = Encoding.UTF8.GetString(body);
+                            _logger.LogInformation(201, $" [x] Received {message}");
+                        };
+                        channel.BasicConsume(queue: "post",
+                                 autoAck: true,
+                                 consumer: consumer);
+            */
         }
 
     }
