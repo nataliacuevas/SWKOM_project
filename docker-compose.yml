@@ -1,6 +1,7 @@
 ﻿version: '3.8'
 
 services:
+
   rabbitmq:
     image: rabbitmq:latest
     container_name: rabbitmq
@@ -25,6 +26,21 @@ services:
       ASPNETCORE_ENVIRONMENT: "Development"
     networks:
       - app-network
+
+
+  OCRworker:
+    container_name: ocr-worker
+    build:
+      context: ./OCRworker 
+      dockerfile: ./Dockerfile
+    environment:
+      - MESSAGE_QUEUE_HOST=rabbitmq
+      - OCR_CONFIG=default  # Any additional configurations
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
 
   nginx:
     image: nginx:latest

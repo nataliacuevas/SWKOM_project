@@ -3,7 +3,7 @@ using NPaperless.OCRLibrary;
 
 Console.WriteLine("OCR with Tesseract Demo!");
 
-string filePath = "./docs/inno.pdf";
+string filePath = "./docs/TourPlanner_Specification.pdf";
 
 try
 {
