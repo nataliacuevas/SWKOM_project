@@ -1,4 +1,5 @@
-﻿using Minio;
+﻿
+using Minio;
 
 
 namespace OCRworker.Repositories
@@ -15,7 +16,7 @@ namespace OCRworker.Repositories
                 .WithSSL(false)
                 .Build();
         }
-
+       
         public async Task<MemoryStream> Get(string fileName)
         {
             var memoryStream = new MemoryStream();
