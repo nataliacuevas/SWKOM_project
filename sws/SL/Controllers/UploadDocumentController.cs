@@ -123,7 +123,7 @@ namespace sws.SL.Controllers
             log.Info("Request to upload a new document.");
             try
             {
-                _documentLogic.Add(uploadDocument);
+                await _documentLogic.Add(uploadDocument);
                 log.Info($"Document '{uploadDocument.Name}' uploaded successfully.");
                 return Ok("File uploaded successfully");
             }

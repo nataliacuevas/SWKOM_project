@@ -13,33 +13,36 @@ namespace sws.BLL
     public class DocumentLogic : IDocumentLogic
     {
         private readonly IDocumentRepository _documentRepository;
+        private readonly IMinioRepository _minioRepository;
         private readonly IMapper _mapper;
         
         private static readonly ILog log = LogManager.GetLogger(typeof(DocumentLogic));
 
-        public DocumentLogic(IDocumentRepository documentRepository, IMapper mapper) 
+        public DocumentLogic(IDocumentRepository documentRepository, IMapper mapper, IMinioRepository minioRepository) 
         {
             _documentRepository = documentRepository;
+            _minioRepository = minioRepository;
             _mapper = mapper;
-            
+                        
         }
 
-        public void Add(UploadDocumentDTO uploadDocumentDTO)
+        public async Task Add(UploadDocumentDTO uploadDocumentDTO)
         {
             log.Info("Adding a new document.");
             try
             {
                 UploadDocument document = _mapper.Map<UploadDocument>(uploadDocumentDTO);
                 _documentRepository.Add(document);
+                await _minioRepository.Add(document);
+                
                 send2RabbitMQ(document);
-
+                
                 log.Info($"Document '{document.Name}' added successfully.");
             }
             catch(Exception ex)
             {
                 log.Error("Error adding document.", ex);
             }
-           
         }
 
         public DownloadDocumentDTO? PopById(long id)

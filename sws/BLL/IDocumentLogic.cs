@@ -4,7 +4,7 @@ namespace sws.BLL
 {
     public interface IDocumentLogic
     {
-        void Add(UploadDocumentDTO document);
+        Task Add(UploadDocumentDTO document);
         // Returns the deleted document, null if not found
         DownloadDocumentDTO? PopById(long id);
 
