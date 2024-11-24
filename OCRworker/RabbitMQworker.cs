@@ -1,47 +1,73 @@
 ﻿using Microsoft.Extensions.Hosting;
-using RabbitMQ.Client.Events;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OCRworker
 {
     public class RabbitMQworker : BackgroundService
     {
+        private readonly IConnectionFactory _connectionFactory;
+       
+        private const string QueueName = "post";
+
+        public RabbitMQworker(IConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+           
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var factory = new ConnectionFactory
+           
+
+            try
             {
-                HostName = "rabbitmq",
-                VirtualHost = "mrRabbit"
-            };
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
+                using var connection = _connectionFactory.CreateConnection();
+                using var channel = connection.CreateModel();
 
-            channel.QueueDeclare(queue: "post",
-                durable: false,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null);
+                channel.QueueDeclare(queue: QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += (model, ea) =>
-            {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                Console.WriteLine($"Received {message}");
-              //  ProcessMessage(message); // Custom task
-            };
+                var consumer = new EventingBasicConsumer(channel);
+                consumer.Received += async (model, ea) =>
+                {
+                    try
+                    {
+                        var body = ea.Body.ToArray();
+                        var message = Encoding.UTF8.GetString(body);
+                       
+                        await ProcessMessageAsync(message);
+                    }
+                    catch (Exception ex)
+                    {
+                       
+                    }
+                };
 
-            channel.BasicConsume(queue: "post", autoAck: true, consumer: consumer);
+                channel.BasicConsume(queue: QueueName, autoAck: true, consumer: consumer);
 
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                await Task.Delay(1000, stoppingToken); // Keeps the worker alive
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    await Task.Delay(1000, stoppingToken);
+                }
             }
+            catch (Exception ex)
+            {
+               
+            }
+
+           
+        }
+
+        private Task ProcessMessageAsync(string message)
+        {
+            // Simulate business logic or external processing
+           
+            return Task.CompletedTask;
         }
     }
 }
