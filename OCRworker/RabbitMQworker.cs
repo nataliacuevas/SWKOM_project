@@ -30,7 +30,7 @@ namespace OCRworker
                 using var connection = _connectionFactory.CreateConnection();
                 using var channel = connection.CreateModel();
 
-                channel.QueueDeclare(queue: QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                channel.QueueDeclare(queue: QueueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
 
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += async (model, ea) =>

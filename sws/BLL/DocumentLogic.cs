@@ -102,7 +102,7 @@ namespace sws.BLL
             using var channel = connection.CreateModel();
 
             channel.QueueDeclare(queue: "post",
-                    durable: false,
+                    durable: true,
                     exclusive: false,
                     autoDelete: false,
                     arguments: null);
@@ -114,32 +114,7 @@ namespace sws.BLL
                                  routingKey: "post",
                                  basicProperties: null,
                                  body: body);
-/*  To retrieve message from RabbitMQ
-            var factory = new ConnectionFactory
-            {
-                HostName = "rabbitmq",
-                VirtualHost = "mrRabbit"
-            };
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
 
-            channel.QueueDeclare(queue: "post",
-                     durable: false,
-                     exclusive: false,
-                     autoDelete: false,
-                     arguments: null);
-
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += (model, ea) =>
-            {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                _logger.LogInformation(201, $" [x] Received {message}");
-            };
-            channel.BasicConsume(queue: "post",
-                     autoAck: true,
-                     consumer: consumer);
-*/
         }
 
     }
