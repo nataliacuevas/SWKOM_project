@@ -20,9 +20,18 @@
   <ItemGroup>
     <ProjectReference Include="..\sws\sws.csproj" />
   </ItemGroup>
+<ItemGroup>
+  <ProjectReference Include="..\OCRworker\OCRworker.csproj" />
+</ItemGroup>
 
   <ItemGroup>
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
+  <!-- Configure TestFiles to be copied to the output directory -->
+  <ItemGroup>
+    <None Update="TestFiles\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
