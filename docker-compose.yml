@@ -35,7 +35,7 @@ services:
       dockerfile: ./Dockerfile
     environment:
       - MESSAGE_QUEUE_HOST=rabbitmq
-      - OCR_CONFIG=default  # Any additional configurations
+      - OCR_CONFIG=default 
     depends_on:
       - rabbitmq
     networks:
