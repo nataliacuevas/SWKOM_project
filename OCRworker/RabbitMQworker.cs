@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NPaperless.OCRLibrary;
+using OCRworker.Repositories;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
@@ -63,11 +65,37 @@ namespace OCRworker
            
         }
 
-        private Task ProcessMessageAsync(string message)
+
+        async Task ProcessMessageAsync(string message)
         {
-            // Simulate business logic or external processing
-           
-            return Task.CompletedTask;
+            string documentId = message.Split(" ").Last();
+            var minioRepo = new MinioRepository();
+
+            // Retrieve the file from MinIO
+            using var memoryStream = await minioRepo.Get(documentId);
+
+            // Perform OCR processing
+            OcrClient ocrClient = new OcrClient(new OcrOptions());
+            var ocrContentText = ocrClient.OcrPdf(memoryStream);
+
+            Console.WriteLine($"OCR Processed Content: {ocrContentText}");
+
+            // Initialize Elasticsearch
+            var elasticsearchRepo = new ElasticsearchRepository();
+            await elasticsearchRepo.InitializeAsync();
+
+            // Index the document in Elasticsearch
+            await elasticsearchRepo.IndexDocumentAsync(
+                id: long.Parse(documentId),
+                name: $"Document_{documentId}",
+                content: ocrContentText,
+                file: memoryStream.ToArray(),
+                timestamp: DateTime.UtcNow
+            );
+
+            Console.WriteLine($"Document {documentId} indexed successfully in Elasticsearch.");
         }
+
+
     }
 }
