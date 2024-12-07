@@ -8,7 +8,7 @@ namespace OCRworker.Repositories
     {
        
         Task InitializeAsync();
-        Task IndexDocumentAsync(long id, string name, string content, byte[] file, DateTime timestamp);
+        Task IndexDocumentAsync(long id, string content, DateTime timestamp);
 
 
     }

@@ -10,17 +10,16 @@ namespace OCRworker.Repositories
 
         public ElasticsearchRepository()
         {
-            var settings = new ElasticsearchClientSettings(new Uri("http://localhost:9200"))
+            var settings = new ElasticsearchClientSettings(new Uri("http://elasticsearch:9200"))
                 .DefaultIndex("ocr-results");
             _client = new ElasticsearchClient(settings);
+
         }
 
         public class ElasticsearchDocument
         {
             public long Id { get; set; }
-            public string? Name { get; set; }
             public string? Content { get; set; }
-            public byte[]? File { get; set; }
             public DateTime Timestamp { get; set; }
         }
 
@@ -32,10 +31,8 @@ namespace OCRworker.Repositories
                 var createIndexResponse = await _client.Indices.CreateAsync("ocr-results", c => c
                     .Mappings(m => m
                         .Properties<ElasticsearchDocument>(p => p
-                            .Keyword(k => k.Id)
-                            .Text(t => t.Name)
+                            .LongNumber(k => k.Id)
                             .Text(t => t.Content)
-                            .Binary(b => b.File)
                             .Date(d => d.Timestamp)
                         )
                     )
@@ -48,14 +45,12 @@ namespace OCRworker.Repositories
             }
         }
 
-        public async Task IndexDocumentAsync(long id, string name, string content, byte[] file, DateTime timestamp)
+        public async Task IndexDocumentAsync(long id, string content, DateTime timestamp)
         {
             var document = new ElasticsearchDocument
             {
                 Id = id,
-                Name = name,
                 Content = content,
-                File = file,
                 Timestamp = timestamp
             };
 

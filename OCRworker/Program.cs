@@ -4,6 +4,7 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using OCRworker.Repositories;
 using OCRworker;
+using Elastic.Clients.Elasticsearch;
 
 
 
@@ -37,7 +38,8 @@ async Task ProcessMessage(string message)
     var elasticsearchRepo = new ElasticsearchRepository();
     await elasticsearchRepo.InitializeAsync();
     Console.WriteLine("Elasticsearch index initialized.");
-
+    await elasticsearchRepo.IndexDocumentAsync(Convert.ToInt64(documentId), ocrContentText, DateTime.Now);
+    Console.WriteLine("Result sent to ElasticSearch");
 }
 
 
