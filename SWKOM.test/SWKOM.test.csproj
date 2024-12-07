@@ -16,13 +16,25 @@
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Minio" Version="6.0.3" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="NUnit" Version="4.2.2" />
     <PackageReference Include="NUnit.Analyzers" Version="3.9.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
     <PackageReference Include="Tesseract" Version="5.2.0" />
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+     <PackageReference Include="Minio.AspNetCore" Version="6.0.1" />
+
+
+
   </ItemGroup>
+<ItemGroup>
+  <None Update="coverlet.json">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
+</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\sws\sws.csproj" />
@@ -31,14 +43,20 @@
   <ProjectReference Include="..\OCRworker\OCRworker.csproj" />
 </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="NUnit.Framework" />
-  </ItemGroup>
+ <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.13.4" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+</ItemGroup>
+
 
   <!-- Configure TestFiles to be copied to the output directory -->
   <ItemGroup>
     <None Update="TestFiles\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Linq.Expressions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
 </Project>

@@ -14,13 +14,23 @@ namespace OCRworker
     public class RabbitMQworker : BackgroundService
     {
         private readonly IConnectionFactory _connectionFactory;
-       
+        private readonly IMinioRepository _minioRepository;
+        private readonly IOcrClient _ocrClient;
+        private readonly IElasticsearchRepository _elasticsearchRepository;
+
+
         private const string QueueName = "post";
 
-        public RabbitMQworker(IConnectionFactory connectionFactory)
+        public RabbitMQworker(
+            IConnectionFactory connectionFactory,
+            IMinioRepository minioRepository,
+            IOcrClient ocrClient,
+            IElasticsearchRepository elasticsearchRepository)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-           
+            _minioRepository = minioRepository ?? throw new ArgumentNullException(nameof(minioRepository));
+            _ocrClient = ocrClient ?? throw new ArgumentNullException(nameof(ocrClient));
+            _elasticsearchRepository = elasticsearchRepository ?? throw new ArgumentNullException(nameof(elasticsearchRepository));
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -69,23 +79,23 @@ namespace OCRworker
         async Task ProcessMessageAsync(string message)
         {
             string documentId = message.Split(" ").Last();
-            var minioRepo = new MinioRepository();
+
 
             // Retrieve the file from MinIO
-            using var memoryStream = await minioRepo.Get(documentId);
+            using var memoryStream = await _minioRepository.Get(documentId);
 
             // Perform OCR processing
-            OcrClient ocrClient = new OcrClient(new OcrOptions());
-            var ocrContentText = ocrClient.OcrPdf(memoryStream);
+            
+            var ocrContentText = _ocrClient.OcrPdf(memoryStream);
 
             Console.WriteLine($"OCR Processed Content: {ocrContentText}");
 
             // Initialize Elasticsearch
-            var elasticsearchRepo = new ElasticsearchRepository();
-            await elasticsearchRepo.InitializeAsync();
+           
+            await _elasticsearchRepository.InitializeAsync();
 
             // Index the document in Elasticsearch
-            await elasticsearchRepo.IndexDocumentAsync(
+            await _elasticsearchRepository.IndexDocumentAsync(
                 id: long.Parse(documentId),
                 name: $"Document_{documentId}",
                 content: ocrContentText,

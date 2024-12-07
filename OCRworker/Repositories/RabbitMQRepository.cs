@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace OCRworker.Repositories
 {
    
-    internal class RabbitMQRepository : IRabbitMQRepository, IDisposable
+    public class RabbitMQRepository : IRabbitMQRepository, IDisposable
     {
         private readonly IModel _channel;
         private readonly IConnection _connection;

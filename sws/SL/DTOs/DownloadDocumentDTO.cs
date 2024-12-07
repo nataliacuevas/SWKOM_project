@@ -1,4 +1,5 @@
-﻿namespace sws.SL.DTOs
+﻿
+namespace sws.SL.DTOs
 {
     public class DownloadDocumentDTO
     {

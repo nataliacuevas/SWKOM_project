@@ -39,6 +39,9 @@ namespace sws.SL.Controllers
         /// Returns all uploaded documents for all the users
         /// to be implemented/repaired
         /// </remarks>
+
+
+        /*
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DownloadDocumentDTO>>> GetUploadedDocuments()
         {
@@ -56,6 +59,33 @@ namespace sws.SL.Controllers
             }
             
         }
+        */
+
+
+
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<DownloadDocumentDTO>>> GetUploadedDocuments()
+        {
+            log.Info("Request to retrieve all documents received.");
+            try
+            {
+                var documents = _documentLogic.GetAll();
+                if (documents == null || !documents.Any())
+                {
+                    log.Warn("No documents found.");
+                    return Ok(new List<DownloadDocumentDTO>()); // Return an empty list if no documents exist
+                }
+
+                log.Info($"Successfully retrieved {documents.Count} documents.");
+                return Ok(documents); // Explicitly wrap the result in OkObjectResult
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error retrieving all documents.", ex);
+                return StatusCode(500, "Internal server error while fetching documents.");
+            }
+        }
 
         /// <summary>
         /// Retrieves an uploaded document
@@ -66,6 +96,8 @@ namespace sws.SL.Controllers
         /// to be implemented/repaired
         /// </remarks>
         // GET: api/UploadDocument/5
+
+        /*
         [HttpGet("{id}")]
         public async Task<ActionResult<DownloadDocumentDTO>> GetUploadDocument(long id)
         {
@@ -79,7 +111,37 @@ namespace sws.SL.Controllers
             }
             log.Info($"Successfully retrieved document with ID {id}.");
             return document;
+        }*/
+
+
+
+
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<DownloadDocumentDTO>> GetUploadDocument(long id)
+        {
+            log.Info($"Request to retrieve document with ID {id}.");
+            try
+            {
+                var document = await _documentLogic.GetByIdAsync(id);
+                if (document == null)
+                {
+                    log.Warn($"Document with ID {id} not found.");
+                    return NotFound();
+                }
+
+                log.Info($"Successfully retrieved document with ID {id}.");
+                return Ok(document); // Explicitly wrap the result in OkObjectResult
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Error retrieving document with ID {id}.", ex);
+                return StatusCode(500, "Internal server error while fetching document.");
+            }
         }
+
+
+
 
         /// <summary>
         /// Updates a target document

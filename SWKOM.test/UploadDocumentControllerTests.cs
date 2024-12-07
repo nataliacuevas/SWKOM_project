@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-
+﻿
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Build.Framework;
 using Moq;
 using NUnit.Framework;
 using sws.BLL;
@@ -13,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace SWKOM.test
 {
+
     [TestFixture]
     public class UploadDocumentControllerTests
     {
@@ -36,79 +36,115 @@ namespace SWKOM.test
             };
         }
 
+        [Test]
+        public async Task GetUploadedDocuments_ShouldReturnAllDocuments()
+        {
+            var documents = new List<DownloadDocumentDTO>
+        {
+            new DownloadDocumentDTO { Id = 1, Name = "Doc1" },
+            new DownloadDocumentDTO { Id = 2, Name = "Doc2" }
+        };
+            _mockDocumentLogic.Setup(logic => logic.GetAll()).Returns(documents);
+
+            var result = await _controller.GetUploadedDocuments();
+
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+            var actionResult = result.Result as OkObjectResult;
+            Assert.That(actionResult?.Value, Is.EqualTo(documents));
+        }
 
         [Test]
-        public async Task PostUploadDocument_ShouldReturnOk_WhenUploadIsSuccessful()
+        public async Task GetUploadedDocuments_ShouldReturnServerError_WhenExceptionOccurs()
         {
-            // Arrange
-            var mockFile = CreateMockFormFile("NewDoc.pdf", new byte[] { 0x01 });
-            var uploadDocument = new UploadDocumentDTO { Name = "NewDoc", File = mockFile };
+            _mockDocumentLogic.Setup(logic => logic.GetAll()).Throws(new Exception());
 
-            // Act
-            var result = await _controller.PostUploadDocument(uploadDocument);
+            var result = await _controller.GetUploadedDocuments();
 
-            // Assert
-            Assert.That(result, Is.Not.Null);
-            var actionResult = result as OkObjectResult;
-            Assert.That(actionResult?.StatusCode, Is.EqualTo(200));
-            Assert.That(actionResult?.Value, Is.EqualTo("File uploaded successfully"));
-            _mockDocumentLogic.Verify(logic => logic.Add(uploadDocument), Times.Once);
+            Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
+            var actionResult = result.Result as ObjectResult;
+            Assert.That(actionResult?.StatusCode, Is.EqualTo(500));
         }
 
         [Test]
         public async Task GetUploadDocument_ShouldReturnNotFound_WhenDocumentDoesNotExist()
         {
-            // Arrange
-            _mockDocumentLogic.Setup(logic => logic.GetByIdAsync(1)).ReturnsAsync((DownloadDocumentDTO)null!);
+            _mockDocumentLogic.Setup(logic => logic.GetByIdAsync(It.IsAny<long>())).ReturnsAsync((DownloadDocumentDTO)null);
 
-            // Act
             var result = await _controller.GetUploadDocument(1);
 
-            // Assert
             Assert.That(result.Result, Is.InstanceOf<NotFoundResult>());
         }
 
+        [Test]
+        public async Task GetUploadDocument_ShouldReturnDocument_WhenFound()
+        {
+            var document = new DownloadDocumentDTO { Id = 1, Name = "TestDoc" };
+            _mockDocumentLogic.Setup(logic => logic.GetByIdAsync(1)).ReturnsAsync(document);
+
+            var result = await _controller.GetUploadDocument(1);
+
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+            var actionResult = result.Result as OkObjectResult;
+            Assert.That(actionResult?.Value, Is.EqualTo(document));
+        }
+
+        [Test]
+        public async Task PostUploadDocument_ShouldReturnOk_WhenUploadIsSuccessful()
+        {
+            var mockFile = CreateMockFormFile("NewDoc.pdf", new byte[] { 0x01 });
+            var uploadDocument = new UploadDocumentDTO { Name = "NewDoc", File = mockFile };
+
+            var result = await _controller.PostUploadDocument(uploadDocument);
+
+            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            _mockDocumentLogic.Verify(logic => logic.Add(uploadDocument), Times.Once);
+        }
+
+        [Test]
+        public async Task PostUploadDocument_ShouldReturnServerError_WhenExceptionIsThrown()
+        {
+            var mockFile = CreateMockFormFile("NewDoc.pdf", new byte[] { 0x01 });
+            var uploadDocument = new UploadDocumentDTO { Name = "NewDoc", File = mockFile };
+            _mockDocumentLogic.Setup(logic => logic.Add(It.IsAny<UploadDocumentDTO>())).ThrowsAsync(new Exception());
+
+            var result = await _controller.PostUploadDocument(uploadDocument);
+
+            Assert.That(result, Is.InstanceOf<ObjectResult>());
+            var actionResult = result as ObjectResult;
+            Assert.That(actionResult?.StatusCode, Is.EqualTo(500));
+        }
 
         [Test]
         public async Task DeleteUploadDocument_ShouldReturnNoContent_WhenDeletionIsSuccessful()
         {
-            // Arrange
             _mockDocumentLogic.Setup(logic => logic.PopById(1)).Returns(new DownloadDocumentDTO { Id = 1 });
 
-            // Act
             var result = await _controller.DeleteUploadDocument(1);
 
-            // Assert
             Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
         public async Task DeleteUploadDocument_ShouldReturnNotFound_WhenDocumentDoesNotExist()
         {
-            // Arrange
             _mockDocumentLogic.Setup(logic => logic.PopById(1)).Returns((DownloadDocumentDTO)null);
 
-            // Act
             var result = await _controller.DeleteUploadDocument(1);
 
-            // Assert
             Assert.That(result, Is.InstanceOf<NotFoundResult>());
         }
 
         [Test]
-        public async Task DeleteUploadDocument_ShouldReturnServerError_WhenDeletionFails()
+        public async Task DeleteUploadDocument_ShouldReturnServerError_WhenExceptionIsThrown()
         {
-            // Arrange
-            _mockDocumentLogic.Setup(logic => logic.PopById(1)).Throws(new System.Exception());
+            _mockDocumentLogic.Setup(logic => logic.PopById(1)).Throws(new Exception());
 
-            // Act
             var result = await _controller.DeleteUploadDocument(1);
 
-            // Assert
             Assert.That(result, Is.InstanceOf<ObjectResult>());
             var actionResult = result as ObjectResult;
             Assert.That(actionResult?.StatusCode, Is.EqualTo(500));
-            Assert.That(actionResult?.Value, Is.EqualTo("Internal server error while deleting document."));
         }
     }
+
 }

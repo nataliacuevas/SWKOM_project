@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using NPaperless.OCRLibrary;
-using System.Drawing.Drawing2D;
 
 namespace SWKOM.test
 {
@@ -67,11 +64,17 @@ namespace SWKOM.test
         public void OcrPdf_ShouldExtractText_FromLongValidPdf()
         {
             // Arrange
-            var filePath = Path.Combine(AppContext.BaseDirectory, "TestFiles", "semester-project.pdf");
-            using var validPdfStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            //var filePath = Path.Combine(AppContext.BaseDirectory, "TestFiles", "semester-project.pdf");
+            string filePath = "./TestFiles/semester-project.pdf";
+            //using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            using var fileStream = new FileStream(filePath, FileMode.Open);
+            //
+            using StreamReader reader = new StreamReader(fileStream);
+            OcrClient ocrClient = new OcrClient(new OcrOptions());
+            var ocrContentText = ocrClient.OcrPdf(fileStream);
 
             // Act
-            var result = _ocrClient.OcrPdf(validPdfStream);
+            var result = _ocrClient.OcrPdf(fileStream);
 
             // Assert
             Assert.That(result, Is.Not.Null.And.Not.Empty, "OCR result should not be null or empty.");
@@ -87,7 +90,7 @@ namespace SWKOM.test
             var ex = Assert.Throws<ImageMagick.MagickMissingDelegateErrorException>(() => _ocrClient.OcrPdf(corruptedStream));
             Assert.That(ex, Is.Not.Null, "Expected a missing delegate error for corrupted PDF.");
         }
-       
+
 
 
     }

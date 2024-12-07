@@ -2,10 +2,7 @@
 using sws.Validators;
 using sws.SL.DTOs;
 using FluentValidation.TestHelper;
-using Microsoft.Extensions.Logging;
 using Moq;
-using sws.DAL.Repositories;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Http;
 
 namespace SWKOM.test

@@ -16,7 +16,13 @@ namespace OCRworker.Repositories
                 .WithSSL(false)
                 .Build();
         }
-       
+
+        // Testable constructor that accepts an IMinioClient
+        public MinioRepository(IMinioClient minioClient)
+        {
+            _minioClient = minioClient;
+        }
+
         public async Task<MemoryStream> Get(string fileName)
         {
             var memoryStream = new MemoryStream();
