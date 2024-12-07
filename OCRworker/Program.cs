@@ -1,6 +1,7 @@
 ﻿using NPaperless.OCRLibrary;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Exceptions;
 using System.Text;
 using OCRworker.Repositories;
 using OCRworker;
