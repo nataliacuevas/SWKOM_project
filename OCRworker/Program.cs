@@ -3,7 +3,8 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using OCRworker.Repositories;
-using RabbitMQ.Client.Exceptions;
+using OCRworker;
+using Elastic.Clients.Elasticsearch;
 
 
 
@@ -32,15 +33,20 @@ while (true);
 
 async Task ProcessMessage(string message)
 {
-    string id = message.Split(" ").Last();
+    string documentId = message.Split(" ").Last();
     var minioRepo = new MinioRepository();
-    using var memoryStream = await minioRepo.Get(id); //fetch
+    using var memoryStream = await minioRepo.Get(documentId);
 
-    using StreamReader reader = new StreamReader(memoryStream);
     OcrClient ocrClient = new OcrClient(new OcrOptions());
+    var ocrContentText = ocrClient.OcrPdf(memoryStream);
 
-    var ocrContentText = ocrClient.OcrPdf(memoryStream); //tesseract
-    Console.WriteLine(ocrContentText);
+    Console.WriteLine($"OCR Processed Content: {ocrContentText}");
 
+    var elasticsearchRepo = new ElasticsearchRepository();
+    await elasticsearchRepo.InitializeAsync();
+    Console.WriteLine("Elasticsearch index initialized.");
+    await elasticsearchRepo.IndexDocumentAsync(Convert.ToInt64(documentId), ocrContentText, DateTime.Now);
+    Console.WriteLine("Result sent to ElasticSearch");
 }
+
 

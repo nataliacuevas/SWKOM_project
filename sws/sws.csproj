@@ -66,4 +66,9 @@
 </ItemGroup>
 
 
+    <ItemGroup>
+      <ProjectReference Include="..\OCRworker\OCRworker.csproj">
+        <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+      </ProjectReference>
+    </ItemGroup>
 </Project>

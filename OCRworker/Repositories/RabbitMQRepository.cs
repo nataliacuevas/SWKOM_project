@@ -48,12 +48,12 @@ namespace OCRworker.Repositories
         }
         public void SimpleSubscribe(string queue, ProcessDelegate subscription)
         {
-            EventHandler<BasicDeliverEventArgs> func = (model, ea) =>
+            EventHandler<BasicDeliverEventArgs> func = async (model, ea) =>
             {
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine($"Received {message}");
-                subscription(message);
+                await subscription(message);
 
             };
             Subscribe(queue, func);

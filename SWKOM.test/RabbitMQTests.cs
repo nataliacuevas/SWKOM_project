@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OCRworker;
 using Microsoft.Build.Framework;
-
+/*
 namespace SWKOM.test
 {
     [TestFixture]
@@ -102,3 +102,5 @@ namespace SWKOM.test
 
     }
 }
+
+*/

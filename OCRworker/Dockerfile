@@ -38,7 +38,7 @@ WORKDIR /app
 COPY --from=build /src/out .
 
 # Copy any additional files like PDFs and trained data
-COPY docs/ /app/docs/
+#COPY docs/ /app/docs/
 COPY tessdata/ /app/tessdata/
 
 # Set the entry point to run the application
