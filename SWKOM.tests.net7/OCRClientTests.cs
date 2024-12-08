@@ -67,14 +67,10 @@ namespace SWKOM.test
         public void OcrPdf_ShouldExtractText_FromLongValidPdf()
         {
             // Arrange
-            //var filePath = Path.Combine(AppContext.BaseDirectory, "TestFiles", "semester-project.pdf");
             string filePath = "./TestFiles/semester-project.pdf";
-            //using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            using var fileStream = new FileStream(filePath, FileMode.Open);
-            //
+            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             using StreamReader reader = new StreamReader(fileStream);
             OcrClient ocrClient = new OcrClient(new OcrOptions());
-            var ocrContentText = ocrClient.OcrPdf(fileStream);
 
             // Act
             var result = _ocrClient.OcrPdf(fileStream);

@@ -39,9 +39,6 @@
   <ItemGroup>
     <ProjectReference Include="..\sws\sws.csproj" />
   </ItemGroup>
-<ItemGroup>
-  <ProjectReference Include="..\OCRworker\OCRworker.csproj" />
-</ItemGroup>
 
  <ItemGroup>
     <PackageReference Include="NUnit" Version="3.13.4" />
@@ -51,11 +48,6 @@
 
 
   <!-- Configure TestFiles to be copied to the output directory -->
-  <ItemGroup>
-    <None Update="TestFiles\**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Linq.Expressions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>

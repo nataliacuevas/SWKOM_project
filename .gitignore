@@ -21,3 +21,5 @@
 /SWKOM.test/.vs/SWKOM.test/DesignTimeBuild
 /SWKOM.test/.vs/ProjectEvaluation
 /SWKOM.test/TestResults
+/SWKOM.tests.net7/bin
+/SWKOM.tests.net7/obj
