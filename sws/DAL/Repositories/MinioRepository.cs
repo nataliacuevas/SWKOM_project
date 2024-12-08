@@ -19,6 +19,12 @@ namespace sws.DAL.Repositories
                 .WithSSL(false)
                 .Build();
         }
+        //for testing
+        public MinioRepository(IMinioClient minioClient)
+        {
+            _minioClient = minioClient ?? throw new ArgumentNullException(nameof(minioClient));
+        }
+
 
         public async Task Add(UploadDocument document)
         {

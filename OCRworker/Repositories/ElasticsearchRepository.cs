@@ -7,6 +7,11 @@ namespace OCRworker.Repositories
     public class ElasticsearchRepository : IElasticsearchRepository
     {
         private readonly ElasticsearchClient _client;
+        public ElasticsearchRepository(ElasticsearchClient client)
+        {
+            _client = client;
+        }
+
 
         public ElasticsearchRepository()
         {

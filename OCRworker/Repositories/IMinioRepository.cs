@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OCRworker.Repositories
 {
-    internal interface IMinioRepository
+    public interface IMinioRepository
     {
         Task<MemoryStream> Get(string filename);
     }

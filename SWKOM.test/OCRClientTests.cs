@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using NPaperless.OCRLibrary;
 using System.Drawing.Drawing2D;
 using System.IO.Pipes;
+
 
 namespace SWKOM.test
 {
@@ -94,7 +93,7 @@ namespace SWKOM.test
             var ex = Assert.Throws<ImageMagick.MagickMissingDelegateErrorException>(() => _ocrClient.OcrPdf(corruptedStream));
             Assert.That(ex, Is.Not.Null, "Expected a missing delegate error for corrupted PDF.");
         }
-       
+
 
 
     }
