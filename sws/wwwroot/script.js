@@ -26,6 +26,43 @@ document.getElementById('fetch-documents').addEventListener('click', function ()
 });
 */
 
+//search 
+document.getElementById('search-form').addEventListener('submit', async function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const query = document.getElementById('search-query').value;
+    const resultsContainer = document.getElementById('search-results');
+
+    resultsContainer.innerHTML = '<p>Loading...</p>';
+
+    try {
+        // Make the API call to the backend
+        const response = await fetch(`/api/documentsearch/search?query=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error('Failed to fetch search results');
+
+        const results = await response.json();
+
+        // Update the UI with results
+        if (results.length === 0) {
+            resultsContainer.innerHTML = '<p>No results found.</p>';
+        } else {
+            resultsContainer.innerHTML = results
+                .map(result => `
+                    <div style="margin-bottom: 1em; padding: 1em; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
+                        <strong>${result.name}</strong><br>
+                        <small>${result.tags}</small><br>
+                        <small>Created at: ${new Date(result.createdAt).toLocaleString()}</small>
+                    </div>
+                `)
+                .join('');
+        }
+    } catch (error) {
+        console.error('Error fetching search results:', error);
+        resultsContainer.innerHTML = '<p style="color: red;">An error occurred while fetching search results.</p>';
+    }
+
+
+
 // Handle file upload
 document.getElementById('add-document-form').addEventListener('submit', function (e) {
     e.preventDefault();
