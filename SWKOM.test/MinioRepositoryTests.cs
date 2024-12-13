@@ -14,7 +14,7 @@ using Minio.DataModel.Response;
 using System.Net;
 
 
-namespace sws.DAL.Tests.Repositories
+namespace SWKOM.test
 {
     [TestFixture]
     public class MinioRepositoryTests

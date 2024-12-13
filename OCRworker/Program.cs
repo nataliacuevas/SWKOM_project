@@ -11,16 +11,18 @@ using Elastic.Clients.Elasticsearch;
 
 Console.WriteLine("OCR with Tesseract Demo!");
 
+var factory = new ConnectionFactoryWrapper("rabbitmq", "mrRabbit");
 
 
 while (true)
 {
     try
     {
-        var rabbit = new RabbitMQRepository();
+        var rabbit = new RabbitMQRepository(factory);
         rabbit.SimpleSubscribe("post", ProcessMessage);
+
         break;
-       
+
     }
     catch (BrokerUnreachableException)
     {
@@ -30,7 +32,7 @@ while (true)
     }
 }
 Console.WriteLine("starting to listen");
-while (true);
+while (true) ;
 
 async Task ProcessMessage(string message)
 {
@@ -49,5 +51,3 @@ async Task ProcessMessage(string message)
     await elasticsearchRepo.IndexDocumentAsync(Convert.ToInt64(documentId), ocrContentText, DateTime.Now);
     Console.WriteLine("Result sent to ElasticSearch");
 }
-
-

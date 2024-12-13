@@ -69,3 +69,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+namespace sws
+{
+    public partial class Program { }
+}
