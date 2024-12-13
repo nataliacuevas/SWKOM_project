@@ -10,17 +10,16 @@ using Elastic.Clients.Elasticsearch;
 
 
 Console.WriteLine("OCR with Tesseract Demo!");
-
-
+var factory = new ConnectionFactoryWrapper("rabbitmq", "mrRabbit");
 
 while (true)
 {
     try
     {
-        var rabbit = new RabbitMQRepository();
+        var rabbit = new RabbitMQRepository(factory);
         rabbit.SimpleSubscribe("post", ProcessMessage);
         break;
-       
+
     }
     catch (BrokerUnreachableException)
     {

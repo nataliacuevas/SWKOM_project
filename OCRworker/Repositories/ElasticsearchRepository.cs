@@ -65,6 +65,6 @@ namespace OCRworker.Repositories
                 throw new Exception($"Failed to index document {id}: {response.ElasticsearchServerError}");
             }
         }
-  
+
     }
 }

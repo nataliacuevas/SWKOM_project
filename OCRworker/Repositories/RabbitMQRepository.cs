@@ -15,16 +15,11 @@ namespace OCRworker.Repositories
         private readonly IConnection _connection;
         private readonly ConnectionFactory _factory;
 
-        public RabbitMQRepository()
+        public RabbitMQRepository(IConnectionFactory factory)
         {
-            var _factory = new ConnectionFactory
-            {
-                HostName = "rabbitmq",
-                VirtualHost = "mrRabbit"
-            };
-            _connection = _factory.CreateConnection();
-            _channel = _connection.CreateModel();
 
+            _connection = factory.CreateConnection();
+            _channel = _connection.CreateModel();
         }
 
         // Implement IDisposable to clean up resources
