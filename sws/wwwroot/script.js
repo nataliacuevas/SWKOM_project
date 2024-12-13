@@ -1,143 +1,188 @@
-﻿// Fetch and display documents
+﻿
+const apiUrl = 'http://localhost:8080/document';
 
-/* TODO, uncomment when fetch-documents object is available 
-document.getElementById('fetch-documents').addEventListener('click', function () {
-    fetch('/api/UploadDocument')
-        .then(response => response.json())
-        .then(data => {
-            const documentList = document.getElementById('document-list');
-            documentList.innerHTML = '';  // Clear previous data
-
-            data.forEach(doc => {
-                const docItem = document.createElement('div');
-                docItem.classList.add('document');
-                docItem.innerHTML = `
-                    <strong>ID:</strong> ${doc.id} <br>
-                    <strong>Name:</strong> ${doc.name} <br>
-                    <button onclick="deleteDocument(${doc.id})" class="danger-btn">Delete</button>
-                    <button onclick="updateDocument(${doc.id})" class="secondary-btn">Update</button>
-                `;
-                documentList.appendChild(docItem);
-            });
-        })
-        .catch(error => {
-            document.getElementById('document-list').textContent = 'Error: Unable to fetch documents';
-        });
-});
-*/
-
-//search 
-document.getElementById('search-form').addEventListener('submit', async function (event) {
-    event.preventDefault(); // Prevent default form submission
-
-    const query = document.getElementById('search-query').value;
-    const resultsContainer = document.getElementById('search-results');
-
-    resultsContainer.innerHTML = '<p>Loading...</p>';
-
+// Fetch and display documents
+async function getDocuments() {
     try {
-        // Make the API call to the backend
-        const response = await fetch(`/api/documentsearch/search?query=${encodeURIComponent(query)}`);
-        if (!response.ok) throw new Error('Failed to fetch search results');
-
-        const results = await response.json();
-
-        // Update the UI with results
-        if (results.length === 0) {
-            resultsContainer.innerHTML = '<p>No results found.</p>';
+        const response = await fetch(`${apiUrl}`);
+        if (response.ok) {
+            const documents = await response.json(); // Get the JSON response
+            displayDocuments(documents); // Display documents
         } else {
-            resultsContainer.innerHTML = results
-                .map(result => `
-                    <div style="margin-bottom: 1em; padding: 1em; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
-                        <strong>${result.name}</strong><br>
-                        <small>${result.tags}</small><br>
-                        <small>Created at: ${new Date(result.createdAt).toLocaleString()}</small>
-                    </div>
-                `)
-                .join('');
+            console.error('Failed to fetch documents:', response.statusText);
+            alert('Failed to load documents. Please try again later.');
         }
     } catch (error) {
-        console.error('Error fetching search results:', error);
-        resultsContainer.innerHTML = '<p style="color: red;">An error occurred while fetching search results.</p>';
+        console.error('Error fetching documents:', error);
+        alert('An error occurred while fetching the documents.');
     }
+}
 
-
-
-// Handle file upload
-document.getElementById('add-document-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-
-
-    const formData = new FormData();
-    const name = document.getElementById('document-name').value;
-    const file = document.getElementById('document-file').files[0];
-
-    console.log("Uploading document " + name);
-
-    formData.append('Name', name);
-    formData.append('File', file);
-
-    fetch('/api/UploadDocument', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => {
-            if (response.ok) {
-                alert('Document added successfully!');
-                document.getElementById('add-document-form').reset();
-                //TODO: uncomment
-                //document.getElementById('fetch-documents').click();  // Refresh document list
-            } else {
-                alert('Error adding document.');
-            }
-        })
-        .catch(error => {
-            alert('Error: Unable to add document.');
+// Search for documents based on a search term
+async function searchDocuments() {
+    try {
+        let searchTerm = document.getElementById('searchInput').value;
+        const response = await fetch(`${apiUrl}/search/${searchTerm}`, {
+            method: 'POST',
         });
+
+        if (!response.ok) {
+            const error = await response.json();
+            console.error('Search failed:', error.message, error.details);
+            alert(`Search failed: ${error.message}`);
+            return;
+        }
+
+        const data = await response.json();
+        displayDocuments(data);
+    } catch (error) {
+        console.error('Error searching documents:', error);
+        alert('An unexpected error occurred.');
+    }
+}
+
+
+// Display the list of documents
+function displayDocuments(documents) {
+    const outputDiv = document.getElementById("output");
+    outputDiv.innerHTML = ''; // Clear existing list
+
+    // Show a message if no documents are found
+    if (documents.length === 0) {
+        outputDiv.innerHTML = `<span class="error">No documents found.</span>`;
+        return;
+    }
+
+    // Display each document
+    documents.forEach(doc => {
+        const listItem = document.createElement('div');
+        listItem.classList.add('document-item');
+
+        // Create a formatted display
+        listItem.innerHTML = `
+            <strong>${doc.name}</strong><br>
+            <span class="file-info">Type: ${doc.fileType}</span>
+            <span class="file-info">Size: ${doc.fileSize}</span>
+        `;
+
+        // Add Delete button
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.classList.add('delete-button');
+        deleteButton.onclick = () => deleteDocument(doc.id);
+
+        // Add Show Text button
+        const textButton = document.createElement('button');
+        textButton.textContent = 'Show Text';
+        textButton.classList.add('delete-button');
+        textButton.onclick = () => fetchDocumentText(doc.id, listItem);
+
+        // Append buttons to the list item
+        listItem.appendChild(deleteButton);
+        listItem.appendChild(textButton);
+
+        // Append the list item to the output
+        outputDiv.appendChild(listItem);
+    });
+}
+
+// Fetch OCR text for a document
+async function fetchDocumentText(id, listItem) {
+    try {
+        // Check if text is already shown
+        let existingTextElement = listItem.querySelector('.ocr-text');
+        if (existingTextElement) {
+
+            existingTextElement.remove();
+            return;// Text already exists: remove it
+        }
+
+        const response = await fetch(`${apiUrl}/ocrText/${id}`);
+        if (response.ok) {
+            const ocrText = await response.text(); // Get ocr text
+            const textElement = document.createElement('p');
+            textElement.textContent = `OCR Text: ${ocrText}`;
+            textElement.classList.add('ocr-text'); // Class to identify
+            textElement.style.marginTop = '10px';
+            textElement.style.color = '#333';
+            listItem.appendChild(textElement);
+        } else {
+            alert('Failed to fetch OCR text.');
+        }
+    } catch (error) {
+        console.error('Error fetching OCR text:', error);
+        alert('An error occurred while fetching OCR text.');
+    }
+}
+
+// Delete a document by its ID
+async function deleteDocument(id) {
+    try {
+        const response = await fetch(`${apiUrl}/${id}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            getDocuments(); // Refresh the document list after deletion
+        } else {
+            alert('Failed to delete the document.');
+        }
+    } catch (error) {
+        console.error('Error deleting document:', error);
+        alert('An error occurred while deleting the document.');
+    }
+}
+
+
+// Upload a document when the form is submitted
+document.getElementById('uploadForm').addEventListener('submit', uploadForm);
+
+document.addEventListener('DOMContentLoaded', () => {
+    const uploadForm = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('fileInput');
+    const responseDiv = document.getElementById('response');
+
+    // Attach the submit event listener
+    uploadForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent default form submission
+        responseDiv.innerHTML = ''; // Clear previous messages
+
+        const file = fileInput.files[0];
+
+        // Handle no file selection
+        if (!file) {
+            responseDiv.innerHTML = `<span class="error">Please select a file to upload!</span>`;
+            return;
+        }
+
+        // Prepare file data for upload
+        const fileSize = `${Math.round(file.size / 1024).toFixed(2)}kB`;
+        const fileName = file.name.substring(0, file.name.lastIndexOf('.'));
+
+        const formData = new FormData();
+        formData.append('UploadedDocument', file);
+        formData.append('Id', 0);
+        formData.append('Name', fileName);
+        formData.append('FileType', file.type);
+        formData.append('FileSize', fileSize);
+
+        try {
+            const response = await fetch('http://localhost:8081/document', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                responseDiv.innerHTML = `<span class="success">File uploaded successfully!</span>`;
+                getDocuments(); // Refresh the document list
+            } else {
+                responseDiv.innerHTML = `<span class="error">File upload failed. Please try again.</span>`;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            responseDiv.innerHTML = `<span class="error">An error occurred while uploading the file.</span>`;
+        }
+    });
+    // Attach search button event
+    searchButton.addEventListener('click', searchDocuments);
 });
-
-/* TODO Uncomment, when uncommenting the top comment
-
-// Delete a document
-function deleteDocument(id) {
-    if (confirm("Are you sure you want to delete this document?")) {
-        fetch(`/api/UploadDocument/${id}`, { method: 'DELETE' })
-            .then(response => {
-                if (response.ok) {
-                    alert('Document deleted successfully!');
-                    document.getElementById('fetch-documents').click();  // Refresh document list
-                } else {
-                    alert('Error deleting document.');
-                }
-            })
-            .catch(error => {
-                alert('Error: Unable to delete document.');
-            });
-    }
-}
-
-// Update a document (simplified)
-function updateDocument(id) {
-    const name = prompt('Enter new name:');
-    const content = prompt('Enter new content:');
-
-    if (name && content) {
-        fetch(`/api/UploadDocument/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, name, content })
-        })
-            .then(response => {
-                if (response.ok) {
-                    alert('Document updated successfully!');
-                    document.getElementById('fetch-documents').click();  // Refresh document list
-                } else {
-                    alert('Error updating document.');
-                }
-            })
-            .catch(error => {
-                alert('Error: Unable to update document.');
-            });
-    }
-}
-*/

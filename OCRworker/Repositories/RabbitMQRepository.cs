@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
@@ -15,14 +16,10 @@ namespace OCRworker.Repositories
         private readonly IConnection _connection;
         private readonly ConnectionFactory _factory;
 
-        public RabbitMQRepository()
+        public RabbitMQRepository(IConnectionFactory factory)
         {
-            var _factory = new ConnectionFactory
-            {
-                HostName = "rabbitmq",
-                VirtualHost = "mrRabbit"
-            };
-            _connection = _factory.CreateConnection();
+         
+            _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
 
         }
