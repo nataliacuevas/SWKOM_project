@@ -4,7 +4,7 @@ using System.Drawing.Drawing2D;
 using System.IO.Pipes;
 
 
-namespace SWKOM.test
+namespace SWKOM.tests.net7
 {
     [TestFixture]
     public class OcrClientTests

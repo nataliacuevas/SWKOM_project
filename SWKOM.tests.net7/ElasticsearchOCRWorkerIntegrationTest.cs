@@ -9,7 +9,7 @@ using NUnit.Framework;
 using OCRworker.Repositories;
 using Testcontainers.Elasticsearch;
 
-namespace SWKOM.test
+namespace SWKOM.tests.net7
 {
     [TestFixture]
     public class ElasticsearchIntegrationTests

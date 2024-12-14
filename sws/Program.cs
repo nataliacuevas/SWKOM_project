@@ -69,3 +69,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Needed this to allow using "Program" in testing.
+namespace sws
+{
+    public partial class Program { }
+}
