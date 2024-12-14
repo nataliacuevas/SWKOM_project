@@ -1,4 +1,5 @@
 ﻿using log4net;
+using Microsoft.Build.Framework;
 using Minio;
 using Minio.DataModel.Args;
 using sws.DAL;
@@ -24,23 +25,28 @@ namespace sws.DAL.Repositories
         {
             _minioClient = minioClient ?? throw new ArgumentNullException(nameof(minioClient));
         }
-
-
+     
         public async Task Add(UploadDocument document)
         {
-            await EnsureBucketExists();
-             
+            try
+            {
+                await EnsureBucketExists();
 
-            var fileName = document.Id.ToString();
-            using var fileStream = new MemoryStream(document.File);
+                var fileName = document.Id.ToString();
+                using var fileStream = new MemoryStream(document.File);
 
-            await _minioClient.PutObjectAsync(new PutObjectArgs()
-                .WithBucket(BucketName)
-                .WithObject(fileName)
-                .WithStreamData(fileStream)
-                .WithObjectSize(document.File.Length));
+                await _minioClient.PutObjectAsync(new PutObjectArgs()
+                    .WithBucket(BucketName)
+                    .WithObject(fileName)
+                    .WithStreamData(fileStream)
+                    .WithObjectSize(document.File.Length));
 
-            _log.Info($"document {fileName} added to MinIO!");
+                _log.Info($"Document {fileName} added to MinIO!");
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Error adding document to MinIO.", ex);
+            }
         }
 
 

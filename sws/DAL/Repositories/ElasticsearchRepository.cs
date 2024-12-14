@@ -1,5 +1,6 @@
 ﻿using Elastic.Clients.Elasticsearch;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace sws.DAL.Repositories
@@ -65,25 +66,33 @@ namespace sws.DAL.Repositories
                 throw new Exception($"Failed to index document {id}: {response.ElasticsearchServerError}");
             }
         }
+    
         //returns matched IDs 
         public async Task<List<long>> SearchQueryInDocumentContent(string query)
         {
-            var response = await _client.SearchAsync<ElasticsearchDocument>(s => s
-                .Query(q => q
-                    .Match(m => m
-                        .Field(f => f.Content)
-                        .Query(query)
-                    )
-                )
-            );
-
-            if (!response.IsValidResponse)
+            try
             {
-                throw new Exception($"Search failed: {response.ElasticsearchServerError}");
-            }
+                //searches content field for matches to a query string
+                var response = await _client.SearchAsync<ElasticsearchDocument>(s => s
+                    .Query(q => q
+                        .Match(m => m
+                            .Field(f => f.Content)
+                            .Query(query)
+                        )
+                    )
+                );
 
-            // Extract IDs from search results
-            return response.Hits.Select(h => h.Source.Id).ToList();
+                if (!response.IsValidResponse)
+                {
+                    throw new DataAccessException($"Search failed: {response.ElasticsearchServerError}");
+                }
+                // Extract IDs from search results
+                return response.Hits.Select(h => h.Source.Id).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException("Error performing search in Elasticsearch.", ex);
+            }
         }
 
     }

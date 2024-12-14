@@ -6,6 +6,9 @@ using sws.DAL.Repositories;
 using sws.SL.DTOs;
 using System.Text;
 using log4net;
+using Microsoft.Build.Framework;
+using System.Collections.Generic;
+using sws.DAL;
 
 
 namespace sws.BLL
@@ -23,9 +26,9 @@ namespace sws.BLL
             _documentRepository = documentRepository;
             _minioRepository = minioRepository;
             _mapper = mapper;
-                        
         }
 
+        
         public async Task Add(UploadDocumentDTO uploadDocumentDTO)
         {
             log.Info("Adding a new document.");
@@ -34,16 +37,17 @@ namespace sws.BLL
                 UploadDocument document = _mapper.Map<UploadDocument>(uploadDocumentDTO);
                 _documentRepository.Add(document); // ID is added to document
                 await _minioRepository.Add(document);
-                
+
                 send2RabbitMQ(document);
-                
+
                 log.Info($"Document '{document.Name}' added successfully.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error("Error adding document.", ex);
             }
         }
+        
 
         public DownloadDocumentDTO? PopById(long id)
         {
@@ -59,26 +63,32 @@ namespace sws.BLL
             }
             return _mapper.Map<DownloadDocumentDTO>(document);
         }
+      
+        public async Task<DownloadDocumentDTO?> GetByIdAsync(long id)
+        {
+            try
+            {
+                var document = await _documentRepository.GetAsync(id);
+                return _mapper.Map<DownloadDocumentDTO>(document);
+            }
+            catch (DataAccessException ex)
+            {
+                throw new BusinessLogicException("Error fetching document asynchronously by ID in the business logic layer.", ex);
+            }
+        }
 
 
         public DownloadDocumentDTO? GetById(long id)
         {
-            var document = _documentRepository.Get(id);
-            return _mapper.Map<DownloadDocumentDTO>(document);
-        }
-
-        public async Task<DownloadDocumentDTO?> GetByIdAsync(long id)
-        {
-            var document = await _documentRepository.GetAsync(id);
-            return _mapper.Map<DownloadDocumentDTO>(document);
-        }
-
-
-        public List<DownloadDocumentDTO> GetAll()
-        {
-            log.Info("Fetching all documents.");
-            var list = _documentRepository.GetAll();
-            return list.Select(doc => _mapper.Map<DownloadDocumentDTO>(doc)).ToList();
+            try
+            {
+                var document = _documentRepository.Get(id);
+                return _mapper.Map<DownloadDocumentDTO>(document);
+            }
+            catch (DataAccessException ex)
+            {
+                throw new BusinessLogicException("Error fetching document by ID in the business logic layer.", ex);
+            }
         }
 
         public DownloadDocumentDTO? Put(UploadDocumentDTO uploadDocumentDTO)
@@ -89,7 +99,20 @@ namespace sws.BLL
             return _mapper.Map<DownloadDocumentDTO>(document);
 
         }
-
+       
+        public List<DownloadDocumentDTO> GetAll()
+        {
+            try
+            {
+                log.Info("Fetching all documents.");
+                var list = _documentRepository.GetAll();
+                return list.Select(doc => _mapper.Map<DownloadDocumentDTO>(doc)).ToList();
+            }
+            catch (DataAccessException ex)
+            {
+                throw new BusinessLogicException("Error in the business logic layer while retrieving all documents.", ex);
+            }
+        }
 
         public void send2RabbitMQ(UploadDocument docu) 
         {

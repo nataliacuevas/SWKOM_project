@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using sws.DAL.Repositories;
 using sws.DAL.Entities;
+using log4net;
+using sws.DAL;
 
 namespace sws.BLL
 {
     public class DocumentSearchService : IDocumentSearchService
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(DocumentSearchService));
         private readonly IElasticsearchRepository _elasticsearchRepository;
         private readonly IDocumentRepository _documentRepository;
 
@@ -19,25 +23,42 @@ namespace sws.BLL
 
         public async Task<List<DocumentSearchResult>> SearchDocumentsAsync(string query)
         {
-            // Step 1: Search Elasticsearch for document IDs
-            var documentIds = await _elasticsearchRepository.SearchQueryInDocumentContent(query);
+            log.Info($"Initiating search for documents with query: '{query}'");
 
-            if (documentIds.Count == 0)
+            try
             {
-                return new List<DocumentSearchResult>();
+                // Step 1: Search Elasticsearch for document IDs
+                log.Debug("Searching Elasticsearch for matching document IDs.");
+                var documentIds = await _elasticsearchRepository.SearchQueryInDocumentContent(query);
+
+                if (!documentIds.Any())
+                {
+                    log.Info("No documents found for the given query.");
+                    return new List<DocumentSearchResult>();
+                }
+
+                // Step 2: Fetch metadata from the database
+                log.Debug($"Fetching metadata for document IDs: {string.Join(", ", documentIds)}");
+                var documents = await _documentRepository.GetDocumentsByIdsAsync(documentIds);
+
+                // Step 3: Combine results
+                log.Info($"Successfully retrieved {documents.Count} documents for the query.");
+                return documents.Select(doc => new DocumentSearchResult
+                {
+                    Id = doc.Id,
+                    Name = doc.Name,
+                }).ToList();
             }
-
-            // Step 2: Fetch metadata from the database
-            var documents = await _documentRepository.GetDocumentsByIdsAsync(documentIds);
-
-            // Step 3: Combine results
-            return documents.Select(doc => new DocumentSearchResult
+            catch (DataAccessException ex)
             {
-                Id = doc.Id,
-                Name = doc.Name,
-
-
-            }).ToList();
+                log.Error("Data access error occurred during document search.", ex);
+                throw new BusinessLogicException("Error searching documents in the business logic layer.", ex);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Unexpected error occurred during document search.", ex);
+                throw new BusinessLogicException("Unexpected error occurred while searching documents.", ex);
+            }
         }
     }
 
@@ -45,6 +66,5 @@ namespace sws.BLL
     {
         public long Id { get; set; }
         public string Name { get; set; }
-
     }
 }

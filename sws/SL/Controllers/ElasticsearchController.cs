@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using sws.SL.DTOs;
 using sws.BLL;
+using System.Collections.Generic;
 
 namespace sws.SL.Controllers
 {
@@ -16,7 +17,7 @@ namespace sws.SL.Controllers
         {
             _documentSearchService = documentSearchService;
         }
-
+        /*
         // TODO move to entities instead
         [HttpGet("{query}")]
         public async Task<ActionResult<IEnumerable<DocumentSearchResult>>> FulltextSearch(string query)
@@ -25,5 +26,28 @@ namespace sws.SL.Controllers
             List<DocumentSearchResult> results = await _documentSearchService.SearchDocumentsAsync(query);
             return Ok(results);
         }
+        */
+
+        [HttpGet("{query}")]
+        public async Task<ActionResult<IEnumerable<DocumentSearchResult>>> FulltextSearch(string query)
+        {
+            log.Info($"Performing fulltext search on Elastic with query {query}");
+            try
+            {
+                List<DocumentSearchResult> results = await _documentSearchService.SearchDocumentsAsync(query);
+                return Ok(results);
+            }
+            catch (BusinessLogicException ex)
+            {
+                log.Error("Business logic error during full-text search.", ex);
+                throw new ServiceException("Error in Elasticsearch search service.", ex);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Unexpected error during full-text search.", ex);
+                return StatusCode(500, "Internal server error while searching.");
+            }
+        }
+
     }
 }

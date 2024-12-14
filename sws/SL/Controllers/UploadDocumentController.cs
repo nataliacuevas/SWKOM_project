@@ -62,8 +62,6 @@ namespace sws.SL.Controllers
         */
 
 
-
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DownloadDocumentDTO>>> GetUploadedDocuments()
         {
@@ -74,18 +72,24 @@ namespace sws.SL.Controllers
                 if (documents == null || !documents.Any())
                 {
                     log.Warn("No documents found.");
-                    return Ok(new List<DownloadDocumentDTO>()); // Return an empty list if no documents exist
+                    return Ok(new List<DownloadDocumentDTO>());
                 }
 
                 log.Info($"Successfully retrieved {documents.Count} documents.");
-                return Ok(documents); // Explicitly wrap the result in OkObjectResult
+                return Ok(documents);
+            }
+            catch (BusinessLogicException ex)
+            {
+                log.Error("Business logic error while retrieving all documents.", ex);
+                throw new ServiceException("Error in retrieving all documents in the service layer.", ex);
             }
             catch (Exception ex)
             {
-                log.Error("Error retrieving all documents.", ex);
-                return StatusCode(500, "Internal server error while fetching documents.");
+                log.Error("Unexpected error while retrieving all documents.", ex);
+                return StatusCode(500, "Internal server error.");
             }
         }
+
 
         /// <summary>
         /// Retrieves an uploaded document
@@ -178,6 +182,7 @@ namespace sws.SL.Controllers
         // POST: api/UploadDocument
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         // TODO: reject if document with same ID exists.
+        
         [HttpPost]
         public async Task<IActionResult> PostUploadDocument([FromForm] UploadDocumentDTO uploadDocument)
         {
@@ -189,21 +194,28 @@ namespace sws.SL.Controllers
                 log.Info($"Document '{uploadDocument.Name}' uploaded successfully.");
                 return Ok("File uploaded successfully");
             }
+            catch (BusinessLogicException ex)
+            {
+                log.Error("Business logic error during document upload.", ex);
+                throw new ServiceException("Error in document upload service.", ex);
+            }
             catch (Exception ex)
             {
                 log.Error("Error uploading document.", ex);
+               
                 return StatusCode(500, "Internal server error while uploading document.");
             }
-
-           
-
 
             //_context.UploadedDocuments.Add(uploadDocument);
             //await _context.SaveChangesAsync();
 
-           
-
         }
+        
+
+
+
+
+
 
         /// <summary>
         /// Deletes document
