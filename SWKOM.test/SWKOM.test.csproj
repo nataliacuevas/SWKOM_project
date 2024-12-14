@@ -35,6 +35,12 @@
   <None Update="coverlet.json">
     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </None>
+  <None Update="TestFiles\HelloWorld.pdf">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
+  <None Update="TestFiles\docker-compose.yml">
+	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
 </ItemGroup>
 
   <ItemGroup>
