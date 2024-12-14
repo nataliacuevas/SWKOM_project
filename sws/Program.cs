@@ -27,8 +27,10 @@ builder.Services.AddAutoMapper(typeof(MapperConfig));
 // Register Repositories
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IMinioRepository, MinioRepository>();
+builder.Services.AddScoped<IElasticsearchRepository, ElasticsearchRepository>();
 // Register Businesslayer 
 builder.Services.AddScoped<IDocumentLogic, DocumentLogic>();
+builder.Services.AddScoped<IDocumentSearchService, DocumentSearchService>();
 // Register Businesslayer 
 builder.Services.AddScoped<IUploadDocumentContext, UploadDocumentContext>();
 //automatic validation 

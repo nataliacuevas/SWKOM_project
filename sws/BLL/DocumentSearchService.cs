@@ -6,12 +6,12 @@ using sws.DAL.Entities;
 
 namespace sws.BLL
 {
-    public class DocumentSearchService
+    public class DocumentSearchService : IDocumentSearchService
     {
-        private readonly ElasticsearchRepository _elasticsearchRepository;
-        private readonly DocumentRepository _documentRepository;
+        private readonly IElasticsearchRepository _elasticsearchRepository;
+        private readonly IDocumentRepository _documentRepository;
 
-        public DocumentSearchService(ElasticsearchRepository elasticsearchRepository, DocumentRepository documentRepository)
+        public DocumentSearchService(IElasticsearchRepository elasticsearchRepository, IDocumentRepository documentRepository)
         {
             _elasticsearchRepository = elasticsearchRepository;
             _documentRepository = documentRepository;

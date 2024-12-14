@@ -64,7 +64,7 @@ namespace sws.DAL.Repositories
 
         public async Task<List<UploadDocument>> GetDocumentsByIdsAsync(List<long> ids)
         {
-            log.Info("Fetching metadata for documents with specified IDs.");
+            log.Info("Fetching metadata for documents with specified IDs " + string.Join(", ", ids));
             return await _context.UploadedDocuments
                 .Where(doc => ids.Contains(doc.Id))
                 .ToListAsync();
