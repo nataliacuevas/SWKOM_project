@@ -10,7 +10,7 @@ using OCRworker.Repositories;
 using IConnectionFactory = OCRworker.Repositories.IConnectionFactory;
 using CommunityToolkit.HighPerformance;
 
-namespace SWKOM.test
+namespace SWKOM.tests.net7
 {
     public class RabbitMQRepositoryTests
     {
@@ -77,7 +77,7 @@ namespace SWKOM.test
             // Assert
             Assert.That(_mockChannel.Invocations.Count, Is.GreaterThan(0), "Message processing did not occur.");
         }
-    
+
         [TearDown]
         public void TearDown()
         {

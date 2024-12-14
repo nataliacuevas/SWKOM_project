@@ -1,24 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using NUnit.Framework;
 using OCRworker.Repositories;
+using Testcontainers.Elasticsearch;
 
-namespace SWKOM.test
+namespace SWKOM.tests.net7
 {
     [TestFixture]
     public class ElasticsearchIntegrationTests
     {
         private ElasticsearchRepository _repository;
         private ElasticsearchClient _client;
+        private ElasticsearchContainer _elasticsearchContainer;
 
         [SetUp]
         public async Task SetUp()
         {
-            var settings = new ElasticsearchClientSettings(new Uri("http://localhost:9200"))
+            _elasticsearchContainer = new ElasticsearchBuilder()
+                .WithImage("docker.elastic.co/elasticsearch/elasticsearch:8.10.1")
+                .WithEnvironment("discovery.type", "single-node")
+                .WithEnvironment("xpack.security.enabled", "false")
+                .WithPortBinding(9200, 9200)
+                .Build();
+
+            await _elasticsearchContainer.StartAsync();
+
+            string url = "http://localhost:9200";
+            var settings = new ElasticsearchClientSettings(new Uri(url))
                 .DefaultIndex("ocr-results");
             _client = new ElasticsearchClient(settings);
 
@@ -29,6 +42,15 @@ namespace SWKOM.test
             if (existsResponse.Exists)
             {
                 await _client.Indices.DeleteAsync("ocr-results");
+            }
+        }
+
+        [TearDown]
+        public async Task TearDown()
+        {
+            if (_elasticsearchContainer != null)
+            {
+                await _elasticsearchContainer.DisposeAsync();
             }
         }
 
@@ -64,6 +86,6 @@ namespace SWKOM.test
             Assert.That(response.Source.Content, Is.EqualTo(content), "Document content should match.");
         }
 
-       
+
     }
 }

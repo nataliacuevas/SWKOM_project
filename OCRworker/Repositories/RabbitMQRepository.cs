@@ -1,5 +1,4 @@
-﻿
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
@@ -18,10 +17,9 @@ namespace OCRworker.Repositories
 
         public RabbitMQRepository(IConnectionFactory factory)
         {
-         
+
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
-
         }
 
         // Implement IDisposable to clean up resources

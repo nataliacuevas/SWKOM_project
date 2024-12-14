@@ -7,7 +7,6 @@ using sws.DAL.Entities;
 using log4net;
 
 using sws.SL.Controllers;
-using System.Collections.Generic;
 
 
 namespace sws.DAL.Repositories
@@ -61,14 +60,6 @@ namespace sws.DAL.Repositories
         public async Task<UploadDocument?> GetAsync(long id)
         {
             return await _context.UploadedDocuments.FirstOrDefaultAsync(doc => doc.Id == id);
-        }
-
-        public async Task<List<UploadDocument>> GetDocumentsByIdsAsync(List<long> ids)
-        {
-            log.Info("Fetching metadata for documents with specified IDs.");
-            return await _context.UploadedDocuments
-                .Where(doc => ids.Contains(doc.Id))
-                .ToListAsync();
         }
 
         public List<UploadDocument> GetAll()

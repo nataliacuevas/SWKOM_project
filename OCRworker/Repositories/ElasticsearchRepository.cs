@@ -1,10 +1,6 @@
 ﻿using Elastic.Clients.Elasticsearch;
 using System;
 using System.Threading.Tasks;
-using Elastic.Transport;
-using System.Collections.Generic;
-using System.Linq;
-
 
 namespace OCRworker.Repositories
 {
@@ -70,25 +66,5 @@ namespace OCRworker.Repositories
             }
         }
 
-        public async Task<List<long>> SearchDocumentsAsync(string query)
-        {
-            var response = await _client.SearchAsync<ElasticsearchDocument>(s => s
-                .Query(q => q
-                    .Match(m => m
-                        .Field(f => f.Content)
-                        .Query(query)
-                    )
-                )
-            );
-
-            if (!response.IsValidResponse)
-            {
-                throw new Exception($"Search failed: {response.ElasticsearchServerError}");
-            }
-
-            // Extract IDs from search results
-            return response.Hits.Select(h => h.Source.Id).ToList();
-        }
     }
-
 }
