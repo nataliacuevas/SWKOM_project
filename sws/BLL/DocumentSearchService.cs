@@ -20,7 +20,7 @@ namespace sws.BLL
         public async Task<List<DocumentSearchResult>> SearchDocumentsAsync(string query)
         {
             // Step 1: Search Elasticsearch for document IDs
-            var documentIds = await _elasticsearchRepository.SearchDocumentsAsync(query);
+            var documentIds = await _elasticsearchRepository.SearchQueryInDocumentContent(query);
 
             if (documentIds.Count == 0)
             {

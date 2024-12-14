@@ -9,7 +9,7 @@ namespace sws.DAL.Repositories
 
         Task InitializeAsync();
         Task IndexDocumentAsync(long id, string content, DateTime timestamp);
-        Task<List<long>> SearchDocumentsAsync(string query);
+        Task<List<long>> SearchQueryInDocumentContent(string query);
 
     }
 }

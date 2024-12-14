@@ -7,7 +7,7 @@ namespace OCRworker.Repositories
     public interface IElasticsearchRepository
     {
        
-        Task InitializeAsync();
+        Task InitializeIndexAsync();
         Task IndexDocumentAsync(long id, string content, DateTime timestamp);
 
 

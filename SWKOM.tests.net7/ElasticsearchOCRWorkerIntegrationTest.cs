@@ -58,7 +58,7 @@ namespace SWKOM.tests.net7
         public async Task InitializeAsync_CreatesIndexIfNotExists()
         {
             // Act
-            await _repository.InitializeAsync();
+            await _repository.InitializeIndexAsync();
 
             // Assert
             var existsResponse = await _client.Indices.ExistsAsync("ocr-results");
@@ -73,7 +73,7 @@ namespace SWKOM.tests.net7
             string content = "This is a test document.";
             DateTime timestamp = DateTime.UtcNow;
 
-            await _repository.InitializeAsync();
+            await _repository.InitializeIndexAsync();
 
             // Act
             await _repository.IndexDocumentAsync(documentId, content, timestamp);

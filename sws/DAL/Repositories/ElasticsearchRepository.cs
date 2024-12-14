@@ -65,8 +65,8 @@ namespace sws.DAL.Repositories
                 throw new Exception($"Failed to index document {id}: {response.ElasticsearchServerError}");
             }
         }
-
-        public async Task<List<long>> SearchDocumentsAsync(string query)
+        //returns matched IDs 
+        public async Task<List<long>> SearchQueryInDocumentContent(string query)
         {
             var response = await _client.SearchAsync<ElasticsearchDocument>(s => s
                 .Query(q => q

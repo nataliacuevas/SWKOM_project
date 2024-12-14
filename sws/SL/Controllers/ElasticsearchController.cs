@@ -12,7 +12,6 @@ namespace sws.SL.Controllers
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(ElasticsearchController));
         private readonly IDocumentSearchService _documentSearchService;
-        // GET: ElasticsearchController
         public ElasticsearchController(IDocumentSearchService documentSearchService) 
         {
             _documentSearchService = documentSearchService;

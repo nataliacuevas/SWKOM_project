@@ -32,7 +32,7 @@ namespace sws.BLL
             try
             {
                 UploadDocument document = _mapper.Map<UploadDocument>(uploadDocumentDTO);
-                _documentRepository.Add(document);
+                _documentRepository.Add(document); // ID is added to document
                 await _minioRepository.Add(document);
                 
                 send2RabbitMQ(document);

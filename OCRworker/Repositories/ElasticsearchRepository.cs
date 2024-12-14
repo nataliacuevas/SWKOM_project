@@ -16,7 +16,7 @@ namespace OCRworker.Repositories
         public ElasticsearchRepository()
         {
             var settings = new ElasticsearchClientSettings(new Uri("http://elasticsearch:9200"))
-                .DefaultIndex("ocr-results");
+                .DefaultIndex("ocr-results"); //TODO: maybe not necessary? 
             _client = new ElasticsearchClient(settings);
 
         }
@@ -28,7 +28,8 @@ namespace OCRworker.Repositories
             public DateTime Timestamp { get; set; }
         }
 
-        public async Task InitializeAsync()
+        //ensures index ocr-results is present in elasticSearch 
+        public async Task InitializeIndexAsync()
         {
             var existsResponse = await _client.Indices.ExistsAsync("ocr-results");
             if (!existsResponse.Exists)
