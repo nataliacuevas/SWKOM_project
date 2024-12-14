@@ -199,7 +199,7 @@
             <form id="search-form">
                 <label for="search-query">Search Query:</label>
                 <input type="text" id="search-query" name="query" placeholder="Enter search terms..." required>
-                <button type="submit" class="primary-btn">Search</button>
+                <button id="search-btn" type="submit" class="primary-btn">Search</button>
             </form>
             <div id="search-results" style="margin-top: 1em; padding: 1em; border: 1px solid #ddd; border-radius: 8px;">
                 <!-- Search results will be displayed here -->
@@ -225,6 +225,7 @@
                 <input type="file" id="document-file" name="file" required>
                 <button type="submit" class="primary-btn">Add Document</button>
             </form>
+            <div id="form-response"> </div>
         </section>
     </main>
 

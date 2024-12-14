@@ -49,6 +49,18 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(xmlPath);
 });
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost") // Replace with your frontend's URL
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // register logging provider
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -69,6 +81,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("AllowLocalhost");
 
 app.Run();
 
