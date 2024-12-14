@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Management Dashboard</title>
     <style>
-      
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -62,7 +62,7 @@
                     }
 
         main {
-            max-width: 1100px; 
+            max-width: 1100px;
             margin: 2em auto;
             padding: 0 1em;
         }
@@ -149,7 +149,7 @@
                 background-color: #c82333;
             }
 
-        /* Document styling */
+
         .document-list {
             display: flex;
             flex-wrap: wrap;
@@ -181,7 +181,10 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-      
+        #search-results div {
+            padding: 0.5em;
+            border-bottom: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
@@ -190,38 +193,28 @@
     </header>
 
     <main>
-        <!-- Communication Test Section -->
-        <section id="test-communication" class="section">
-            <h3>Test Server Communication</h3>
-            <form action="/api/helloworld" method="get" target="server-response">
-                <button type="submit" class="primary-btn">Check Server Connection</button>
+        <!-- search Section -->
+        <section id="search-section" class="section">
+            <h3>Search Documents</h3>
+            <form id="search-form">
+                <label for="search-query">Search Query:</label>
+                <input type="text" id="search-query" name="query" placeholder="Enter search terms..." required>
+                <button type="submit" class="primary-btn">Search</button>
             </form>
-            <iframe name="server-response" style="width:100%; height:50px; border:1px solid #ddd; margin-top:1em;"></iframe>
+            <div id="search-results" style="margin-top: 1em; padding: 1em; border: 1px solid #ddd; border-radius: 8px;">
+                <!-- Search results will be displayed here -->
+            </div>
+
         </section>
+
+
 
         <!-- Document Management Section -->
         <section id="document-section" class="section">
 
             <div class="document-list" id="document-list">
-                <!-- Hardcoded data for example -->
-                <div class="document">
 
-                    <strong>Name:</strong> Sample Document 1 <br>
 
-                    <div class="document-buttons">
-                        <button onclick="deleteDocument(1)" class="danger-btn">Delete</button>
-                        <button onclick="updateDocument(1)" class="secondary-btn">Update</button>
-                    </div>
-                </div>
-                <div class="document">
-
-                    <strong>Name:</strong> Sample Document 2 <br>
-
-                    <div class="document-buttons">
-                        <button onclick="deleteDocument(2)" class="danger-btn">Delete</button>
-                        <button onclick="updateDocument(2)" class="secondary-btn">Update</button>
-                    </div>
-                </div>
             </div>
 
             <h3>Add New Document</h3>

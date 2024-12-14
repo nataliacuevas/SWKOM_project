@@ -13,6 +13,8 @@ namespace sws.DAL.Repositories
 
         Task<UploadDocument?> GetAsync(long id);
 
+        Task<List<UploadDocument>> GetDocumentsByIdsAsync(List<long> ids);
+
         List<UploadDocument> GetAll();
         // Returns the old value if existant
         UploadDocument? Put(UploadDocument document);
