@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy the csproj file and restore any dependencies (via npm)
 COPY *.csproj ./
-RUN dotnet restore
+RUN dotnet restore "sws.csproj"
 
 
 # Copy the rest of the application code

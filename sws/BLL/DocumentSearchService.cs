@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using sws.DAL.Repositories;
-using OCRworker.Repositories;
 using sws.DAL.Entities;
 
 namespace sws.BLL
@@ -36,8 +35,8 @@ namespace sws.BLL
             {
                 Id = doc.Id,
                 Name = doc.Name,
-               
-                
+
+
             }).ToList();
         }
     }
@@ -46,6 +45,6 @@ namespace sws.BLL
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        
+
     }
 }
