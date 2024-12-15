@@ -24,7 +24,7 @@ namespace sws.SL.Controllers
             log.Info($"Performing fulltext search on Elastic with query {query}");
             try
             {
-                List<DocumentSearchResult> results = await _documentSearchService.SearchDocumentsAsync(query);
+                List<DocumentSearchDTO> results = await _documentSearchService.SearchDocumentsAsync(query);
                 return Ok(results);
             }
             catch (BusinessLogicException ex)

@@ -35,7 +35,7 @@ namespace sws.BLL
                 if (!documentIds.Any())
                 {
                     log.Info("No documents found for the given query.");
-                    return new List<DocumentSearchResult>();
+                    return new List<DocumentSearchDTO>();
                 }
 
                 // Step 2: Fetch metadata from the database
