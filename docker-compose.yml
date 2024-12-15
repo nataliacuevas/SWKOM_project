@@ -39,7 +39,8 @@ services:
       ASPNETCORE_ENVIRONMENT: "Development"
     networks:
       - app-network
-
+    depends_on:
+      - postgres
 
   ocrworker:
     container_name: ocrworker
@@ -96,6 +97,7 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+
 
   
   pgadmin:

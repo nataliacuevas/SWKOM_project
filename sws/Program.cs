@@ -49,7 +49,6 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(xmlPath);
 });
 
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost",
@@ -60,13 +59,10 @@ builder.Services.AddCors(options =>
                   .AllowAnyMethod();
         });
 });
-
 // register logging provider
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-
 var app = builder.Build();
-
 
 
 // Configure the HTTP request pipeline.
@@ -83,6 +79,28 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseCors("AllowLocalhost");
+
+// To create the tables on postgres.
+log.Info("Before migration! ");
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<UploadDocumentContext>();
+    while (true)
+    {
+        try
+        {
+            dbContext.Database.Migrate();
+            break;
+        }
+        catch
+        {
+            log.Info("Retrying migration! ");
+            Thread.Sleep(1000);
+        }
+    }
+
+    log.Info("Applied migration! ");
+}
 
 app.Run();
 

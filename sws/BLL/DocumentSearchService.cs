@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using sws.DAL.Repositories;
 using sws.DAL.Entities;
+using sws.SL.DTOs;
 
 namespace sws.BLL
 {
@@ -17,21 +18,21 @@ namespace sws.BLL
             _documentRepository = documentRepository;
         }
 
-        public async Task<List<DocumentSearchResult>> SearchDocumentsAsync(string query)
+        public async Task<List<DocumentSearchDTO>> SearchDocumentsAsync(string query)
         {
             // Step 1: Search Elasticsearch for document IDs
             var documentIds = await _elasticsearchRepository.SearchQueryInDocumentContent(query);
 
             if (documentIds.Count == 0)
             {
-                return new List<DocumentSearchResult>();
+                return new List<DocumentSearchDTO>();
             }
 
             // Step 2: Fetch metadata from the database
             var documents = await _documentRepository.GetDocumentsByIdsAsync(documentIds);
 
             // Step 3: Combine results
-            return documents.Select(doc => new DocumentSearchResult
+            return documents.Select(doc => new DocumentSearchDTO
             {
                 Id = doc.Id,
                 Name = doc.Name,
@@ -39,12 +40,5 @@ namespace sws.BLL
 
             }).ToList();
         }
-    }
-
-    public class DocumentSearchResult
-    {
-        public long Id { get; set; }
-        public string Name { get; set; }
-
     }
 }

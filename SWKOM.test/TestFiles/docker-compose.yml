@@ -29,7 +29,7 @@ services:
 
   sws-api:
     build:
-      context: ../../../sws
+      context: ../../../../../sws
       dockerfile: ./Dockerfile
     ports:
       - "8080:8080"  
@@ -37,12 +37,14 @@ services:
       ASPNETCORE_ENVIRONMENT: "Development"
     networks:
       - app-network
+    depends_on:
+      - postgres
 
 
   ocrworker:
     container_name: ocrworker
     build:
-      context: ../../../OCRworker 
+      context: ../../../../../OCRworker
       dockerfile: ./Dockerfile
     environment:
       - MESSAGE_QUEUE_HOST=rabbitmq

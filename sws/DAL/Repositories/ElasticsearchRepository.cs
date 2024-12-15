@@ -1,4 +1,5 @@
 ﻿using Elastic.Clients.Elasticsearch;
+using log4net;
 using System;
 using System.Threading.Tasks;
 
@@ -7,6 +8,8 @@ namespace sws.DAL.Repositories
     public class ElasticsearchRepository : IElasticsearchRepository
     {
         private readonly ElasticsearchClient _client;
+        private static readonly ILog _log = LogManager.GetLogger(typeof(ElasticsearchClient));
+
         public ElasticsearchRepository(ElasticsearchClient client)
         {
             _client = client;
@@ -68,6 +71,7 @@ namespace sws.DAL.Repositories
         //returns matched IDs 
         public async Task<List<long>> SearchQueryInDocumentContent(string query)
         {
+            _log.Info($"Forwarding to Elasticsearch query: {query}");
             var response = await _client.SearchAsync<ElasticsearchDocument>(s => s
                 .Query(q => q
                     .Match(m => m

@@ -17,12 +17,11 @@ namespace sws.SL.Controllers
             _documentSearchService = documentSearchService;
         }
 
-        // TODO move to entities instead
         [HttpGet("{query}")]
-        public async Task<ActionResult<IEnumerable<DocumentSearchResult>>> FulltextSearch(string query)
+        public async Task<ActionResult<IEnumerable<DocumentSearchDTO>>> FulltextSearch(string query)
         {
             log.Info($"Performing fulltext search on Elastic with query {query}");
-            List<DocumentSearchResult> results = await _documentSearchService.SearchDocumentsAsync(query);
+            List<DocumentSearchDTO> results = await _documentSearchService.SearchDocumentsAsync(query);
             return Ok(results);
         }
     }
