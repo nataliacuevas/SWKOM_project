@@ -22,6 +22,7 @@ namespace SWKOM.test
         [SetUp]
         public void Setup()
         {
+            // Set up the WebApplicationFactory to use an in-memory db
             _factory = new WebApplicationFactory<Program>()
                 .WithWebHostBuilder(builder =>
                 {
@@ -44,13 +45,14 @@ namespace SWKOM.test
                         db.Database.EnsureCreated();
                     });
                 });
-
+            // Create HTTP client to simulate API requests
             _client = _factory.CreateClient();
         }
 
         [Test]
         public async Task UploadDocument_ShouldSaveToDatabase()
         {
+            //test full integration flow for uploading a document
             // Arrange
             var formData = new MultipartFormDataContent
             {
@@ -58,7 +60,7 @@ namespace SWKOM.test
                 { new ByteArrayContent(Encoding.UTF8.GetBytes("Test file content")), "File", "TestDocument.txt" }
             };
 
-            // Act
+            // Act: send a POST request to upload document
             var response = await _client.PostAsync("/api/UploadDocument", formData);
 
             // Assert

@@ -26,27 +26,31 @@ namespace SWKOM.test
         [SetUp]
         public void SetUp()
         {
+            //initialize mock minIO client
             _minioClientMock = new Mock<IMinioClient>(MockBehavior.Strict);
 
-            // Default bucket check to true, can override in specific tests.
+            // set up default behavior for bucket existense
             _minioClientMock
                 .Setup(m => m.BucketExistsAsync(It.IsAny<BucketExistsArgs>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            _minioClientMock
-      .Setup(m => m.PutObjectAsync(It.IsAny<PutObjectArgs>(), It.IsAny<CancellationToken>()))
-      .ReturnsAsync(new PutObjectResponse(
-          HttpStatusCode.OK,
-          BucketName,
-          new Dictionary<string, string>(),
-          3L,          // Assuming the file is 3 bytes long, adjust accordingly
-          "test-etag"
-      ));
-            // MakeBucketAsync in newer Minio versions returns Task only
+
+            //set up default behavior for file upload
+         _minioClientMock
+            .Setup(m => m.PutObjectAsync(It.IsAny<PutObjectArgs>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PutObjectResponse(
+                HttpStatusCode.OK,
+                BucketName,
+                new Dictionary<string, string>(),
+                3L,          // file length
+                "test-etag"
+           ));
+
+            //set up default behavior for bucket creation
             _minioClientMock
                 .Setup(m => m.MakeBucketAsync(It.IsAny<MakeBucketArgs>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
-
+            // Initialize the repository with the mock client
             _repository = new MinioRepository(_minioClientMock.Object);
         }
 
@@ -59,13 +63,18 @@ namespace SWKOM.test
         [Test]
         public async Task Add_BucketExists_DoesNotCreateBucket()
         {
+            //test adding a document when bucket already exists
+
+            //Arrange: mock to simulate existing bucket
             var document = CreateTestUploadDocument();
             _minioClientMock
                 .Setup(m => m.BucketExistsAsync(It.IsAny<BucketExistsArgs>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
+            //Act
             await _repository.Add(document);
 
+            //Assert
             _minioClientMock.Verify(m => m.BucketExistsAsync(It.IsAny<BucketExistsArgs>(), It.IsAny<CancellationToken>()), Times.Once);
             _minioClientMock.Verify(m => m.MakeBucketAsync(It.IsAny<MakeBucketArgs>(), It.IsAny<CancellationToken>()), Times.Never);
             _minioClientMock.Verify(m => m.PutObjectAsync(It.IsAny<PutObjectArgs>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -74,13 +83,15 @@ namespace SWKOM.test
         [Test]
         public async Task Add_BucketDoesNotExist_CreatesBucket()
         {
+            //adding a document when bucket does not exist
+            //Arrange: mock to simulate missing bucket
             var document = CreateTestUploadDocument();
             _minioClientMock
                 .Setup(m => m.BucketExistsAsync(It.IsAny<BucketExistsArgs>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
-
+            //Act
             await _repository.Add(document);
-
+            //Assert: verify bucket was created before adding document
             _minioClientMock.Verify(m => m.BucketExistsAsync(It.IsAny<BucketExistsArgs>(), It.IsAny<CancellationToken>()), Times.Once);
             _minioClientMock.Verify(m => m.MakeBucketAsync(It.IsAny<MakeBucketArgs>(), It.IsAny<CancellationToken>()), Times.Once);
             _minioClientMock.Verify(m => m.PutObjectAsync(It.IsAny<PutObjectArgs>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -89,10 +100,12 @@ namespace SWKOM.test
         [Test]
         public async Task Add_UploadsDocumentSuccessfully()
         {
+            //test document is uploaded successfully to MinIO
+            //Arrange
             var document = CreateTestUploadDocument();
-
+            //Act
             await _repository.Add(document);
-
+            //Assert
             _minioClientMock.Verify(m => m.PutObjectAsync(It.IsAny<PutObjectArgs>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -113,6 +126,7 @@ namespace SWKOM.test
 
         private UploadDocument CreateTestUploadDocument()
         {
+            //helper method to create a test document
             return new UploadDocument
             {
                 Id = 12345L,

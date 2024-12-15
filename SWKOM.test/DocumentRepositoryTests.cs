@@ -27,10 +27,11 @@ namespace SWKOM.test
         [SetUp]
         public void Setup()
         {
+            //initialize the in memory database and repository for testing
             _context = CreateInMemoryContext("TestDatabase");
             _repository = new DocumentRepository(_context);
 
-            // Seed test data with required properties
+            // Seed test data with required properties into the db
             _context.UploadedDocuments.AddRange(new List<UploadDocument>
             {
                 new UploadDocument { Id = 1, Name = "TestDoc1", File = new byte[] { 0x01, 0x02 } },
@@ -42,6 +43,7 @@ namespace SWKOM.test
         [TearDown]
         public void TearDown()
         {
+            //clean up db after each test
             _context.Database.EnsureDeleted();
             _context.Dispose();
         }
@@ -49,6 +51,7 @@ namespace SWKOM.test
         [Test]
         public void Add_ShouldAddDocumentToDatabase()
         {
+            
             // Arrange
             var document = new UploadDocument { Id = 3, Name = "NewDoc", File = new byte[] { 0x05, 0x06 } };
 
@@ -65,6 +68,7 @@ namespace SWKOM.test
         [Test]
         public void Get_ShouldReturnDocument_WhenExists()
         {
+            //test retrieving an existing document by ID
             // Act
             var result = _repository.Get(1);
 
@@ -77,6 +81,7 @@ namespace SWKOM.test
         [Test]
         public void Get_ShouldReturnNull_WhenNotExists()
         {
+            //retireving a documents that doesn't exist
             // Act
             var result = _repository.Get(99);
 
@@ -87,6 +92,7 @@ namespace SWKOM.test
         [Test]
         public void Pop_ShouldRemoveDocument_WhenExists()
         {
+            //remove an existing document by ID
             // Act
             var result = _repository.Pop(1);
 

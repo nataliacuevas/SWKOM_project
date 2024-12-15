@@ -26,6 +26,7 @@ namespace SWKOM.test
         [SetUp]
         public void Setup()
         {
+            
             _mockDocumentRepository = new Mock<IDocumentRepository>();
             _mockMinioRepository = new Mock<IMinioRepository>();
             _mockMapper = new Mock<IMapper>();
@@ -35,10 +36,12 @@ namespace SWKOM.test
                 _mockMapper.Object,
                 _mockMinioRepository.Object);
         }
+        //test add method to ensure document is correctly aved to repository and minIO and message is sent to rabbitmq
         [Test]
         public async Task Add_ShouldAddDocumentAndSendToRabbitMQ()
         {
             // Arrange
+            //set up input data and mocks
             var fileContent = Encoding.UTF8.GetBytes("Sample Content");
             var fileName = "TestDocument.txt";
             var formFileMock = new Mock<IFormFile>();
@@ -63,19 +66,19 @@ namespace SWKOM.test
             _mockMapper.Setup(m => m.Map<UploadDocument>(uploadDocumentDTO))
                 .Returns(uploadDocument);
 
-            // Act
+            // Act : call add method
             await _documentLogic.Add(uploadDocumentDTO);
 
-            // Assert
+            // Assert : verify expected repository interactions
             _mockDocumentRepository.Verify(repo => repo.Add(uploadDocument), Times.Once);
             _mockMinioRepository.Verify(repo => repo.Add(uploadDocument), Times.Once);
         }
 
-
+        //test to ensure method retrieves and removes a document if it exists in the repository
         [Test]
         public void PopById_ShouldReturnDocumentIfExists()
         {
-            // Arrange
+            // Arrange: set up a document to be returned by the mock repository
             var document = new UploadDocument { Id = 1, Name = "Test Document" };
             var expectedDTO = new DownloadDocumentDTO { Id = 1, Name = "Test Document" };
 
@@ -93,6 +96,7 @@ namespace SWKOM.test
         [Test]
         public void PopById_ShouldReturnNullIfDocumentNotFound()
         {
+            
             // Arrange
             _mockDocumentRepository.Setup(repo => repo.Pop(It.IsAny<long>())).Returns((UploadDocument)null);
 
@@ -106,6 +110,8 @@ namespace SWKOM.test
         [Test]
         public void GetById_ShouldReturnMappedDocument()
         {
+            //test method to ensure it retrives a document by ID and maps it to a DTO
+
             // Arrange
             var document = new UploadDocument { Id = 1, Name = "Test Document" };
             var expectedDTO = new DownloadDocumentDTO { Id = 1, Name = "Test Document" };
@@ -124,6 +130,7 @@ namespace SWKOM.test
         [Test]
         public async Task GetByIdAsync_ShouldReturnMappedDocument()
         {
+        
             // Arrange
             var document = new UploadDocument { Id = 1, Name = "Test Document" };
             var expectedDTO = new DownloadDocumentDTO { Id = 1, Name = "Test Document" };
@@ -142,7 +149,9 @@ namespace SWKOM.test
         [Test]
         public void GetAll_ShouldReturnListOfDocuments()
         {
-            // Arrange
+            //retrieves all documents and maps them to a list of DTOs
+
+            // Arrange: set up documents and their corresponding DTOs
             var documents = new List<UploadDocument>
             {
                 new UploadDocument { Id = 1, Name = "Doc 1" },

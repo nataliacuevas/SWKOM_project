@@ -22,12 +22,14 @@ namespace SWKOM.test
         [SetUp]
         public void Setup()
         {
+            // Mock the business logic layer for dependency injection
             _mockDocumentLogic = new Mock<IDocumentLogic>();
             _controller = new UploadDocumentController(_mockDocumentLogic.Object);
         }
 
         private IFormFile CreateMockFormFile(string fileName, byte[] content)
         {
+            // Helper method to create a mock IFormFile object
             var stream = new MemoryStream(content);
             return new FormFile(stream, 0, content.Length, "formFile", fileName)
             {
@@ -39,15 +41,18 @@ namespace SWKOM.test
         [Test]
         public async Task GetUploadedDocuments_ShouldReturnAllDocuments()
         {
+            // Test that the controller returns all documents
+            // Arrange: Mock the logic layer to return a list of documents
             var documents = new List<DownloadDocumentDTO>
         {
             new DownloadDocumentDTO { Id = 1, Name = "Doc1" },
             new DownloadDocumentDTO { Id = 2, Name = "Doc2" }
         };
             _mockDocumentLogic.Setup(logic => logic.GetAll()).Returns(documents);
-
+            //Act: call endpoint
             var result = await _controller.GetUploadedDocuments();
 
+            // Assert: Verify that the response is a 200 OK with the correct data
             Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
             var actionResult = result.Result as OkObjectResult;
             Assert.That(actionResult?.Value, Is.EqualTo(documents));
@@ -56,10 +61,11 @@ namespace SWKOM.test
         [Test]
         public async Task GetUploadedDocuments_ShouldReturnServerError_WhenExceptionOccurs()
         {
+            //Arrange
             _mockDocumentLogic.Setup(logic => logic.GetAll()).Throws(new Exception());
-
+            //Act
             var result = await _controller.GetUploadedDocuments();
-
+            //Assert
             Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
             var actionResult = result.Result as ObjectResult;
             Assert.That(actionResult?.StatusCode, Is.EqualTo(500));
@@ -127,6 +133,8 @@ namespace SWKOM.test
         [Test]
         public async Task DeleteUploadDocument_ShouldReturnNotFound_WhenDocumentDoesNotExist()
         {
+            // Test the response when attempting to delete a non-existent document
+            // Arrange: Set up mock to return null
             _mockDocumentLogic.Setup(logic => logic.PopById(1)).Returns((DownloadDocumentDTO)null);
 
             var result = await _controller.DeleteUploadDocument(1);
@@ -137,10 +145,14 @@ namespace SWKOM.test
         [Test]
         public async Task DeleteUploadDocument_ShouldReturnServerError_WhenExceptionIsThrown()
         {
+            // Test handling of exceptions during document deletion
+            // Arrange: Set up mock to throw an exception
             _mockDocumentLogic.Setup(logic => logic.PopById(1)).Throws(new Exception());
 
+            // Act: Call the controller method
             var result = await _controller.DeleteUploadDocument(1);
 
+            // Assert: Verify the response contains a server error
             Assert.That(result, Is.InstanceOf<ObjectResult>());
             var actionResult = result as ObjectResult;
             Assert.That(actionResult?.StatusCode, Is.EqualTo(500));
