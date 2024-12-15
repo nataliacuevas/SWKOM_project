@@ -1,6 +1,0 @@
-﻿{
-  "excludes": [
-    "[sws.Migrations]*",
-    "sws.DAL.UploadDocumentContext"
-  ]
-}

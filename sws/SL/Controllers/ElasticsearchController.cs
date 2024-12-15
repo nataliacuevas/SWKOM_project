@@ -30,7 +30,7 @@ namespace sws.SL.Controllers
             catch (BusinessLogicException ex)
             {
                 log.Error("Business logic error during full-text search.", ex);
-                throw new ServiceException("Error in Elasticsearch search service.", ex);
+                return StatusCode(500, "Error in Elasticsearch search service.");
             }
             catch (Exception ex)
             {

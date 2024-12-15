@@ -76,7 +76,15 @@ namespace SWKOM.test
                     {
                         PropertyNameCaseInsensitive = true // Ensures case-insensitive deserialization
                     };
-                    List<DocumentSearchDTO> matches = JsonSerializer.Deserialize<List<DocumentSearchDTO>>(output, options);
+                    List<DocumentSearchDTO> matches;
+                    try
+                    {
+                        matches = JsonSerializer.Deserialize<List<DocumentSearchDTO>>(output, options);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception($"Something wrong with output: {output}");
+                    }
                     if (matches.Count > 0)
                     {
                         Assert.That(matches[0].Name, Is.EqualTo(filename));

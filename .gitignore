@@ -24,3 +24,9 @@
 /SWKOM.tests.net7/bin
 /SWKOM.tests.net7/obj
 /SWKOM.test/coverage-report
+/coveragereport
+/SWKOM.test/coverlet.json
+/SWKOM.tests.net7/TestResults/662a7400-e5c1-42e3-b340-9cd8faa22724
+/SWKOM.tests.net7/coverlet.json
+/sws/coverlet.json
+/coverage-commands.PS1
