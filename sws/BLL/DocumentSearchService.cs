@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using sws.DAL.Repositories;
 using sws.DAL.Entities;
+using sws.SL.DTOs;
 using log4net;
 using sws.DAL;
 
@@ -21,7 +22,7 @@ namespace sws.BLL
             _documentRepository = documentRepository;
         }
 
-        public async Task<List<DocumentSearchResult>> SearchDocumentsAsync(string query)
+        public async Task<List<DocumentSearchDTO>> SearchDocumentsAsync(string query)
         {
             log.Info($"Initiating search for documents with query: '{query}'");
 
@@ -43,7 +44,7 @@ namespace sws.BLL
 
                 // Step 3: Combine results
                 log.Info($"Successfully retrieved {documents.Count} documents for the query.");
-                return documents.Select(doc => new DocumentSearchResult
+                return documents.Select(doc => new DocumentSearchDTO
                 {
                     Id = doc.Id,
                     Name = doc.Name,
@@ -60,11 +61,5 @@ namespace sws.BLL
                 throw new BusinessLogicException("Unexpected error occurred while searching documents.", ex);
             }
         }
-    }
-
-    public class DocumentSearchResult
-    {
-        public long Id { get; set; }
-        public string Name { get; set; }
     }
 }

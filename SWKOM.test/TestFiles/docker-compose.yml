@@ -10,8 +10,6 @@ services:
       - xpack.security.enabled=false
     ports:
       - "9200:9200"
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
     networks:
       - app-network
 
@@ -31,7 +29,7 @@ services:
 
   sws-api:
     build:
-      context: ./sws
+      context: ../../../../../sws
       dockerfile: ./Dockerfile
     ports:
       - "8080:8080"  
@@ -42,10 +40,11 @@ services:
     depends_on:
       - postgres
 
+
   ocrworker:
     container_name: ocrworker
     build:
-      context: ./OCRworker 
+      context: ../../../../../OCRworker
       dockerfile: ./Dockerfile
     environment:
       - MESSAGE_QUEUE_HOST=rabbitmq
@@ -66,20 +65,6 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     command: server /data --console-address ":9001"
-    volumes:
-      - minio-data:/data
-    networks:
-      - app-network
-
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"  # Expose Nginx on port 80.
-    volumes:
-      - ./sws/nginx.conf:/etc/nginx/nginx.conf  # Binde die Nginx-Konfigurationsdatei ein
-      - ./sws/wwwroot:/app/wwwroot  # Statische Dateien mounten
-    depends_on:
-      - sws-api  # Ensure that the Nginx service starts after the API.
     networks:
       - app-network
     
@@ -88,8 +73,6 @@ services:
     image: postgres:14-alpine
     ports:
       - "5432:5432"
-    volumes:
-      - postgres-data:/data/postgres
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -99,29 +82,6 @@ services:
     restart: unless-stopped
 
 
-  
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4:7.2
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
-    volumes:
-      - ./sws/pgadmin-servers.json:/pgadmin4/servers.json
-
-    ports:
-      - "${PGADMIN_PORT:-5050}:80"
-    networks:
-      - app-network
-    restart: unless-stopped
-
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  minio-data:
-  elasticsearch-data:
-  postgres-data:
