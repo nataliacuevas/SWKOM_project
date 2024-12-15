@@ -20,7 +20,8 @@ namespace OCRworker.Repositories
             _client = new ElasticsearchClient(settings);
 
         }
-
+  
+        // Internal representation of a document stored in Elasticsearch
         public class ElasticsearchDocument
         {
             public long Id { get; set; }
@@ -28,7 +29,7 @@ namespace OCRworker.Repositories
             public DateTime Timestamp { get; set; }
         }
 
-        //ensures index ocr-results is present in elasticSearch 
+        //ensures ocr-results index is present in elasticSearch, creating if necessary
         public async Task InitializeIndexAsync()
         {
             var existsResponse = await _client.Indices.ExistsAsync("ocr-results");
@@ -50,7 +51,7 @@ namespace OCRworker.Repositories
                 }
             }
         }
-
+        // Indexes a document in Elasticsearch with the specified ID, content, and timestamp.
         public async Task IndexDocumentAsync(long id, string content, DateTime timestamp)
         {
             var document = new ElasticsearchDocument

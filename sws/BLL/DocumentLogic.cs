@@ -15,9 +15,10 @@ namespace sws.BLL
 {
     public class DocumentLogic : IDocumentLogic
     {
-        private readonly IDocumentRepository _documentRepository;
-        private readonly IMinioRepository _minioRepository;
-        private readonly IMapper _mapper;
+        // Dependencies injected into the business logic layer
+        private readonly IDocumentRepository _documentRepository; //handles db interactions
+        private readonly IMinioRepository _minioRepository; //handles interactions with MinIO 
+        private readonly IMapper _mapper; //maps DTOs to entities and vice versa
         
         private static readonly ILog log = LogManager.GetLogger(typeof(DocumentLogic));
 
@@ -28,7 +29,9 @@ namespace sws.BLL
             _mapper = mapper;
         }
 
-        
+        /* Adds a new document to the system: saves it to the database, 
+         * uploads it to MinIO, and sends a RabbitMQ message.
+        */
         public async Task Add(UploadDocumentDTO uploadDocumentDTO)
         {
             log.Info("Adding a new document.");
@@ -113,7 +116,9 @@ namespace sws.BLL
                 throw new BusinessLogicException("Error in the business logic layer while retrieving all documents.", ex);
             }
         }
-
+        
+        //Publishes a message to RabbitMQ, notifying that a document has been uploaded
+        
         public void send2RabbitMQ(UploadDocument docu) 
         {
             var factory = new ConnectionFactory

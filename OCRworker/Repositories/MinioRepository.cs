@@ -17,12 +17,13 @@ namespace OCRworker.Repositories
                 .Build();
         }
 
-        // Testable constructor that accepts an IMinioClient
+        // Constructor for testing, allowing injection of a mock Minio client.
         public MinioRepository(IMinioClient minioClient)
         {
             _minioClient = minioClient;
         }
 
+        // Retrieves a file from Minio storage as a MemoryStream.
         public async Task<MemoryStream> Get(string fileName)
         {
             var memoryStream = new MemoryStream();

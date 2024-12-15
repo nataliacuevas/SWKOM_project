@@ -29,6 +29,8 @@ namespace sws.DAL.Repositories
             public DateTime Timestamp { get; set; }
         }
 
+        // Ensures the Elasticsearch index exists; creates it if it does not.
+     
         public async Task InitializeAsync()
         {
             var existsResponse = await _client.Indices.ExistsAsync("ocr-results");

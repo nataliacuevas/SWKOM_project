@@ -28,6 +28,8 @@ namespace OCRworker.Repositories
             _channel?.Dispose(); 
             _connection?.Dispose();
         }
+
+        // Subscribes to a RabbitMQ queue and processes incoming messages using a given handler
         public void Subscribe(string queue, EventHandler<BasicDeliverEventArgs> subscription)
         {
             _channel.QueueDeclare(queue: queue,

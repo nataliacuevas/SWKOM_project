@@ -18,20 +18,21 @@ public class OcrClient : IOcrClient
 
     public string OcrPdf(Stream pdfStream)
     {
-        var stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder(); // to store the extracted text from all pages of the PDF
 
-        using (var magickImages = new MagickImageCollection())
+        using (var magickImages = new MagickImageCollection()) // ImageMagick collection to process PDF pages as images
         {
-            magickImages.Read(pdfStream);
+            magickImages.Read(pdfStream); // Read the PDF stream and load its pages into the collection
             foreach (var magickImage in magickImages)
             {
-                // Set the resolution and format of the image (adjust as needed)
+                // Set the resolution and format of the image 
                 magickImage.Density = new Density(300, 300);
                 magickImage.Format = MagickFormat.Png;
 
-                // Perform OCR on the image
+                // Initialize Tesseract OCR engine with the specified data path and language
                 using (var tesseractEngine = new TesseractEngine(tessDataPath, language, EngineMode.Default))
                 {
+                    //process current image page for OCR
                     using (var page = tesseractEngine.Process(Pix.LoadFromMemory(magickImage.ToByteArray())))
                     {
                         var extractedText = page.GetText();
@@ -40,8 +41,7 @@ public class OcrClient : IOcrClient
                 }
             }
         }
-
-
+        // Return the combined text extracted from all pages of the PDF
         return stringBuilder.ToString();
     }
 }

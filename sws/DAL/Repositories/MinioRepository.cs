@@ -20,12 +20,13 @@ namespace sws.DAL.Repositories
                 .WithSSL(false)
                 .Build();
         }
-        //for testing
+
+        // Constructor for testing purposes, allows injecting a mock or custom MinIO client
         public MinioRepository(IMinioClient minioClient)
         {
             _minioClient = minioClient ?? throw new ArgumentNullException(nameof(minioClient));
         }
-     
+        // Uploads a document to the MinIO bucket.
         public async Task Add(UploadDocument document)
         {
             try

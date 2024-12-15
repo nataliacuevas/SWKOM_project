@@ -13,7 +13,8 @@ namespace sws.BLL
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(DocumentSearchService));
         private readonly IElasticsearchRepository _elasticsearchRepository;
-        private readonly IDocumentRepository _documentRepository;
+        private readonly IDocumentRepository _documentRepository;  // Fetches document metadata from the database
+
 
         public DocumentSearchService(IElasticsearchRepository elasticsearchRepository, IDocumentRepository documentRepository)
         {
