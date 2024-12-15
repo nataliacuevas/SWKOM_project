@@ -33,7 +33,7 @@ namespace sws.DAL.Repositories
                 await EnsureBucketExists();
 
                 var fileName = document.Id.ToString();
-                using var fileStream = new MemoryStream(document.File);
+                using var fileStream = new MemoryStream(document.File); //minIO requires a stream
 
                 await _minioClient.PutObjectAsync(new PutObjectArgs()
                     .WithBucket(BucketName)

@@ -11,11 +11,6 @@ namespace sws.DAL.Repositories
         private readonly ElasticsearchClient _client;
         private static readonly ILog _log = LogManager.GetLogger(typeof(ElasticsearchClient));
 
-        public ElasticsearchRepository(ElasticsearchClient client)
-        {
-            _client = client;
-        }
-
 
         public ElasticsearchRepository()
         {
@@ -32,44 +27,6 @@ namespace sws.DAL.Repositories
             public DateTime Timestamp { get; set; }
         }
 
-        public async Task InitializeAsync()
-        {
-            var existsResponse = await _client.Indices.ExistsAsync("ocr-results");
-            if (!existsResponse.Exists)
-            {
-                var createIndexResponse = await _client.Indices.CreateAsync("ocr-results", c => c
-                    .Mappings(m => m
-                        .Properties<ElasticsearchDocument>(p => p
-                            .LongNumber(k => k.Id)
-                            .Text(t => t.Content)
-                            .Date(d => d.Timestamp)
-                        )
-                    )
-                );
-
-                if (!createIndexResponse.IsValidResponse)
-                {
-                    throw new Exception($"Failed to create Elasticsearch index: {createIndexResponse.ElasticsearchServerError}");
-                }
-            }
-        }
-
-        public async Task IndexDocumentAsync(long id, string content, DateTime timestamp)
-        {
-            var document = new ElasticsearchDocument
-            {
-                Id = id,
-                Content = content,
-                Timestamp = timestamp
-            };
-
-            var response = await _client.IndexAsync(document, i => i.Index("ocr-results").Id(id.ToString()));
-            if (!response.IsValidResponse)
-            {
-                throw new Exception($"Failed to index document {id}: {response.ElasticsearchServerError}");
-            }
-        }
-    
         //returns matched IDs 
         public async Task<List<long>> SearchQueryInDocumentContent(string query)
         {

@@ -44,7 +44,7 @@ namespace SWKOM.test
             string filename = "miau";
             string testFile = "TestFiles/HelloWorld.pdf";
 
-            // Step 1: Upload test file using the UploadDocument endpoint
+            // Step 1: Upload test file using the UploadDocument endpoint (copy of swagger curl command)
             // needed scaped \" because Window's curl is intolerant ): 
             string arguments = "-X POST \"http://localhost:8080/api/UploadDocument\" ";
             arguments += "-H  \"accept: */*\" ";
@@ -62,11 +62,12 @@ namespace SWKOM.test
             //         present in Elasticsearch and the database.
             string query = "Hello";
 
-            // Retry logic to wait until OCR worker is done
+            // send requests continously until OCR worker is done
             int maxRetries = 60;
             int currentRetry = 0;
             while(true)
             {
+                //request to webAPI with the query
                 Process curlCheck = executeCommand("curl", $"-X GET http://localhost:8080/api/Elasticsearch/{query} -H \"accept: text/plain\"");
                 if (curlCheck.ExitCode == 0)
                 {
@@ -76,15 +77,8 @@ namespace SWKOM.test
                     {
                         PropertyNameCaseInsensitive = true // Ensures case-insensitive deserialization
                     };
-                    List<DocumentSearchDTO> matches;
-                    try
-                    {
-                        matches = JsonSerializer.Deserialize<List<DocumentSearchDTO>>(output, options);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception($"Something wrong with output: {output}");
-                    }
+                    List<DocumentSearchDTO> matches = JsonSerializer.Deserialize<List<DocumentSearchDTO>>(output, options);
+
                     if (matches.Count > 0)
                     {
                         Assert.That(matches[0].Name, Is.EqualTo(filename));
@@ -106,8 +100,6 @@ namespace SWKOM.test
                     throw new Exception($"curlCheck error: {curlCheck.StandardError.ReadToEnd()}");
                 }
             }
-
-
         }
 
         private void tearDownDocker()
@@ -128,7 +120,7 @@ namespace SWKOM.test
             process.StartInfo.RedirectStandardError = true; // to read the output
             process.StartInfo.RedirectStandardOutput = true; // to read the output
             process.StartInfo.UseShellExecute = false; // required for redirection above
-            process.StartInfo.CreateNoWindow = true; // TODO: findout
+            process.StartInfo.CreateNoWindow = true; // avoid creating command window
             // Start the process
             process.Start();
             process.WaitForExit();

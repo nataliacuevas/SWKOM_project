@@ -17,7 +17,13 @@ namespace sws.SL.Controllers
         {
             _documentSearchService = documentSearchService;
         }
+        /// <summary>
+        /// search for a given string in documents
+        /// </summary>
 
+        /// <remarks>
+        /// The string must match a word of the ocr'ed text. This endpoint returns a list of matches with their IDs 
+        /// </remarks>
         [HttpGet("{query}")]
         public async Task<ActionResult<IEnumerable<DocumentSearchDTO>>> FulltextSearch(string query)
         {

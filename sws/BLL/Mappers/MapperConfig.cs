@@ -26,25 +26,5 @@ namespace sws.BLL.Mappers
             file.CopyTo(memoryStream);
             return memoryStream.ToArray();
         }
-        /*  From the demo repository.
-        public class MapperConfig
-        {
-            public static Mapper InitializeAutomapper()
-            {
-                //Provide all the Mapping Configuration
-                var config = new MapperConfiguration(cfg =>
-                {
-                    //Configuring 
-                    cfg.CreateMap<UploadDocumentDTO, UploadDocument>();
-                    cfg.CreateMap<UploadDocument, UploadDocumentDTO>();
-                    //Any Other Mapping Configuration ....
-                });
-
-                //Create an Instance of Mapper and return that Instance
-                var mapper = new Mapper(config);
-                return mapper;
-            }
-        }
-        */
     }
 }

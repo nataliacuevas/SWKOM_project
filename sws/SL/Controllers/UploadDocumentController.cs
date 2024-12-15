@@ -39,29 +39,6 @@ namespace sws.SL.Controllers
         /// Returns all uploaded documents for all the users
         /// to be implemented/repaired
         /// </remarks>
-
-
-        /*
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<DownloadDocumentDTO>>> GetUploadedDocuments()
-        {
-            log.Info("Request to retrieve all documents received.");
-            try
-            {
-                var documents = _documentLogic.GetAll();
-                log.Info($"Successfully retrieved {documents.Count} documents.");
-                return documents;
-            }
-             catch (Exception ex)
-            {
-                log.Error("Error retrieving all documents.", ex);
-                return StatusCode(500, "Internal server error while fetching documents.");
-            }
-            
-        }
-        */
-
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DownloadDocumentDTO>>> GetUploadedDocuments()
         {
@@ -90,37 +67,13 @@ namespace sws.SL.Controllers
             }
         }
 
-
         /// <summary>
         /// Retrieves an uploaded document
         /// </summary>
 
         /// <remarks>
         /// Given a unique ID, retrieves the correspondant document if existing
-        /// to be implemented/repaired
         /// </remarks>
-        // GET: api/UploadDocument/5
-
-        /*
-        [HttpGet("{id}")]
-        public async Task<ActionResult<DownloadDocumentDTO>> GetUploadDocument(long id)
-        {
-           log.Info($"Request to retrieve document with ID {id}.");
-
-
-            var document = await _documentLogic.GetByIdAsync(id);
-            if (document == null) {
-                log.Warn($"Document with ID {id} not found.");
-                return NotFound();
-            }
-            log.Info($"Successfully retrieved document with ID {id}.");
-            return document;
-        }*/
-
-
-
-
-
         [HttpGet("{id}")]
         public async Task<ActionResult<DownloadDocumentDTO>> GetUploadDocument(long id)
         {
@@ -145,33 +98,6 @@ namespace sws.SL.Controllers
         }
 
 
-
-
-        /// <summary>
-        /// Updates a target document
-        /// </summary>
-
-        /// <remarks>
-        /// To update a document, the provided file must have the same ID
-        /// to be implemented/repaired
-        /// </remarks>
-        // PUT: api/UploadDocument/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        /* To be adapted for new DTO
-         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUploadDocument(UploadDocumentDTO uploadDocument)
-        {
-            var document = _documentLogic.Put(uploadDocument);
-            if (document == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return NoContent();
-            }
-        }
-        */
         /// <summary>
         /// Uploads new document
         /// </summary>
@@ -180,9 +106,6 @@ namespace sws.SL.Controllers
         /// Uploads new file into the DB
         /// </remarks>
         // POST: api/UploadDocument
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // TODO: reject if document with same ID exists.
-        
         [HttpPost]
         public async Task<IActionResult> PostUploadDocument([FromForm] UploadDocumentDTO uploadDocument)
         {
@@ -197,7 +120,7 @@ namespace sws.SL.Controllers
             catch (BusinessLogicException ex)
             {
                 log.Error("Business logic error during document upload.", ex);
-                throw new ServiceException("Error in document upload service.", ex);
+                return StatusCode(500, "Internal server error in BusinessLogic.");
             }
             catch (Exception ex)
             {
@@ -205,17 +128,7 @@ namespace sws.SL.Controllers
                
                 return StatusCode(500, "Internal server error while uploading document.");
             }
-
-            //_context.UploadedDocuments.Add(uploadDocument);
-            //await _context.SaveChangesAsync();
-
         }
-        
-
-
-
-
-
 
         /// <summary>
         /// Deletes document
